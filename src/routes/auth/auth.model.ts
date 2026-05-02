@@ -1,0 +1,156 @@
+import { AppRole, TypeOfVerificationCode, UserStatus } from '@/shared/constants/auth.constant'
+import z from 'zod'
+
+export const UserSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  password: z.string().min(6).max(500),
+  name: z.string().max(500),
+  phoneNumber: z.string().max(50),
+  avatar: z.string().max(1000).nullable(),
+  appRole: z.enum([AppRole.USER, AppRole.ADMIN]),
+  totpSecret: z.string().max(1000).nullable(),
+  status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.BLOCKED]),
+  lastSeenAt: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
+
+export const SafeUserSchema = UserSchema.omit({
+  password: true,
+  totpSecret: true,
+})
+
+export const RegisterBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+  name: true,
+  phoneNumber: true,
+})
+  .extend({
+    password: z.string().min(6).max(500),
+    name: z.string().min(1).max(500),
+    phoneNumber: z.string().min(1).max(50),
+    confirmPassword: z.string().min(6).max(500),
+    code: z.string().length(6),
+  })
+  .strict()
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Password and confirm password must match',
+        path: ['confirmPassword'],
+      })
+    }
+  })
+
+export const RegisterResSchema = SafeUserSchema
+
+export const VerificationCodeSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  code: z.string().length(6),
+  type: z.enum([TypeOfVerificationCode.FORGOT_PASSWORD, TypeOfVerificationCode.REGISTER]),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+})
+
+export const SendOTPBodySchema = VerificationCodeSchema.pick({
+  email: true,
+  type: true,
+}).strict()
+
+export const LoginBodySchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(6).max(500),
+  })
+  .strict()
+
+export const LoginResSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  userId: z.number(),
+  name: z.string(),
+  email: z.string(),
+  avatar: z.string().nullable(),
+  phoneNumber: z.string(),
+  appRole: z.enum([AppRole.USER, AppRole.ADMIN]),
+})
+
+export const RefreshTokenBodySchema = z
+  .object({
+    refreshToken: z.string(),
+  })
+  .strict()
+
+export const RefreshTokenResSchema = LoginResSchema
+
+export const DeviceSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  userAgent: z.string(),
+  ip: z.string(),
+  isActive: z.boolean(),
+  lastActive: z.date(),
+  createdAt: z.date(),
+})
+
+export const RefreshTokenSchema = z.object({
+  token: z.string(),
+  userId: z.number(),
+  deviceId: z.number(),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+})
+
+export const LogoutBodySchema = RefreshTokenBodySchema
+
+export const GoogleAuthStateSchema = DeviceSchema.pick({
+  userAgent: true,
+  ip: true,
+})
+
+export const GetAuthorizationUrlResSchema = z.object({
+  url: z.string().url(),
+})
+
+export const ForgotPasswordBodySchema = z
+  .object({
+    email: z.string().email(),
+    code: z.string().length(6),
+    newPassword: z.string().min(6).max(500),
+    confirmNewPassword: z.string().min(6).max(500),
+  })
+  .strict()
+  .superRefine(({ confirmNewPassword, newPassword }, ctx) => {
+    if (confirmNewPassword !== newPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Mật khẩu và mật khẩu xác nhận phải giống nhau',
+        path: ['confirmNewPassword'],
+      })
+    }
+  })
+export type UserType = z.infer<typeof UserSchema>
+export type RegisterBodyType = z.infer<typeof RegisterBodySchema>
+export type RegisterResType = z.infer<typeof RegisterResSchema>
+export type VerificationCodeType = z.infer<typeof VerificationCodeSchema>
+export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>
+export type LoginBodyType = z.infer<typeof LoginBodySchema>
+export type LoginResType = z.infer<typeof LoginResSchema>
+export type RefreshTokenType = z.infer<typeof RefreshTokenSchema>
+export type RefreshTokenBodyType = z.infer<typeof RefreshTokenBodySchema>
+export type RefreshTokenResType = z.infer<typeof RefreshTokenResSchema>
+export type DeviceType = z.infer<typeof DeviceSchema>
+
+export const UpdatePhoneBodySchema = z.object({
+  phoneNumber: z.string().min(1).max(50),
+}).strict()
+
+export type UpdatePhoneBodyType = z.infer<typeof UpdatePhoneBodySchema>
+export type LogoutBodyType = z.infer<typeof LogoutBodySchema>
+export type GoogleAuthStateType = z.infer<typeof GoogleAuthStateSchema>
+export type GetAuthorizationUrlResType = z.infer<typeof GetAuthorizationUrlResSchema>
+export type ForgotPasswordBodyType = z.infer<typeof ForgotPasswordBodySchema>

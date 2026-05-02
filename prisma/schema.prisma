@@ -1,0 +1,254 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+// ==========================================
+// 1. MODULE: USER & AUTHENTICATION
+// ==========================================
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String   @db.VarChar(500)
+  password    String   @db.VarChar(500)
+  phoneNumber String   @db.VarChar(50)
+  avatar      String?  @db.VarChar(1000)
+  banner      String?  @db.VarChar(1000)
+  birthday    DateTime?
+
+  // Thay vì dùng bảng Role nặng nề, ta dùng Enum nội bộ
+  appRole     AppRole  @default(USER)
+
+  // Security & Auth
+  totpSecret  String?  @unique @db.VarChar(1000)
+  status      UserStatus @default(INACTIVE)
+  lastSeenAt  DateTime? // Rất cần cho App Chat (Hiển thị "Hoạt động 5 phút trước")
+
+  devices       Device[]
+  refreshTokens RefreshToken[]
+
+  // Relations: Chat & Bạn bè
+  messages               Message[]
+  conversationJoined     ConversationMember[]
+  friendRequestsSent     Friendship[] @relation("FriendRequesters")
+  friendRequestsReceived Friendship[] @relation("FriendReceivers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roupJoinRequestsReceived GroupJoinRequest[] @relation("TargetUser")
+  groupJoinRequestsSent     GroupJoinRequest[] @relation("InviterUser")
+}
+
+model VerificationCode {
+  id        Int                  @id @default(autoincrement())
+  email     String               @db.VarChar(500)
+  code      String               @db.VarChar(50)
+  type      VerificationCodeType
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, type])
+  @@index([expiresAt])
+}
+
+model Device {
+  id         Int            @id @default(autoincrement())
+  userId     Int
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String
+  ip         String
+  isActive   Boolean        @default(true) 
+  lastActive DateTime       @updatedAt
+  createdAt  DateTime       @default(now())
+  
+  refreshTokens RefreshToken[] 
+}
+
+model RefreshToken {
+  token     String   @unique @db.VarChar(1000)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId  Int      
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([expiresAt])
+}
+
+// ==========================================
+// 2. MODULE: REAL-TIME CHAT & VIDEO CALL
+// ==========================================
+
+model Friendship {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  receiverId  Int
+
+  requester   User     @relation("FriendRequesters", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("FriendReceivers", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  status      FriendshipStatus @default(PENDING) // PENDING, ACCEPTED, BLOCKED
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([requesterId, receiverId])
+}
+
+model Conversation {
+  id        Int      @id @default(autoincrement())
+  isGroup   Boolean  @default(false)
+  name      String?  // Tên nhóm (để trống nếu chat 1-1)
+  avatar    String?  
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members   ConversationMember[]
+  messages  Message[]
+
+  joinRequests  GroupJoinRequest[]
+}
+
+model ConversationMember {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  // Quyền trong nhóm (MEMBER, ADMIN, DEPUTY)
+  role           MemberRole   @default(MEMBER) 
+  
+  joinedAt       DateTime     @default(now())
+
+  // Trạng thái đã xem tin nhắn
+  lastReadMessageId Int?
+  lastReadMessage   Message?  @relation("LastReadMessage", fields: [lastReadMessageId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, conversationId]) 
+
+  clearedAt  DateTime?
+}
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  content        String?  @db.Text
+  fileUrl        String?  @db.VarChar(1000) // Dùng chung cho Ảnh/Video/File từ S3
+  
+
+  // Phân loại tin nhắn (Rất quan trọng cho Video Call)
+  type           MessageType @default(TEXT)
+  isRecalled     Boolean     @default(false) 
+  
+  // Tính năng Trả lời (Reply)
+  replyToId      Int?
+  replyTo        Message?    @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies        Message[]   @relation("MessageReplies")
+
+  senderId       Int
+  sender         User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  readByMembers  ConversationMember[] @relation("LastReadMessage")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  deletedByIds Int[] @default([])
+
+  // Pin tin nhắn
+  isPinned   Boolean @default(false)
+
+  //reaction
+  reactions  MessageReaction[]
+}
+
+// ==========================================
+// 3. ENUMS
+// ==========================================
+
+enum AppRole {
+  USER
+  ADMIN
+}
+
+enum MemberRole {
+  MEMBER
+  ADMIN
+  DEPUTY
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+  CALL_LOG  // <--- Lịch sử Video Call (VD: "Cuộc gọi nhỡ", "Cuộc gọi kết thúc - 5p30s")
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum VerificationCodeType {
+  REGISTER
+  FORGOT_PASSWORD
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+// Bảng lưu trữ Yêu cầu thêm thành viên (Chờ duyệt)
+model GroupJoinRequest {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  userId         Int          // Người được mời vào nhóm
+  inviterId      Int          // Người gửi lời mời (Thành viên/Phó nhóm)
+
+  status         String       @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation("TargetUser", fields: [userId], references: [id], onDelete: Cascade)
+  inviter        User         @relation("InviterUser", fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId]) // Tránh 1 người bị mời nhiều lần khi đang chờ duyệt
+}
+
+// Luu cảm xúc
+model MessageReaction {
+  id        Int      @id @default(autoincrement())
+  messageId Int
+  userId    Int
+  emoji     String   // Lưu icon (ví dụ: '👍', '❤️', '😂')
+  createdAt DateTime @default(now())
+
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  // Ràng buộc: 1 người chỉ được thả 1 loại cảm xúc trên 1 tin nhắn (thả cái khác sẽ đè lên)
+  @@unique([messageId, userId]) 
+}
