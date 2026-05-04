@@ -1,5 +1,8 @@
+[phases.install]
+cmds = ["npm install --omit=dev --ignore-scripts"]
+
 [phases.build]
-cmds = ["npm install --omit=dev"]
+cmds = []
 
 [start]
-cmd = "node dist/main"
+cmd = "node --max-old-space-size=400 dist/main"
