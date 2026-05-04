@@ -9,7 +9,7 @@
     "email:dev": "email dev",
     "email:build": "email build",
     "email:export": "email export",
-    "build": "nest build",
+    "build": "node --max-old-space-size=512 node_modules/.bin/nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
