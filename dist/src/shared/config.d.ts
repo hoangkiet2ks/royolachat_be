@@ -1,0 +1,21 @@
+declare const envConfig: {
+    DATABASE_URL: string;
+    ACCESS_TOKEN_SECRET: string;
+    ACCESS_TOKEN_EXPIRES_IN: string;
+    REFRESH_TOKEN_SECRET: string;
+    REFRESH_TOKEN_EXPIRES_IN: string;
+    OTP_EXPIRES_IN: string;
+    GMAIL_EMAIL: string;
+    GMAIL_APP_PASSWORD: string;
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
+    GOOGLE_REDIRECT_URI: string;
+    GOOGLE_CLIENT_REDIRECT_URI: string;
+    APP_NAME: string;
+    AWS_REGION: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_S3_BUCKET_NAME: string;
+    RESEND_API_KEY?: string | undefined;
+};
+export default envConfig;

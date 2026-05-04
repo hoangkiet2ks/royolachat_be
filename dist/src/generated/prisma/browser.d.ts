@@ -1,0 +1,14 @@
+import * as Prisma from './internal/prismaNamespaceBrowser';
+export { Prisma };
+export * as $Enums from './enums';
+export * from './enums';
+export type User = Prisma.UserModel;
+export type VerificationCode = Prisma.VerificationCodeModel;
+export type Device = Prisma.DeviceModel;
+export type RefreshToken = Prisma.RefreshTokenModel;
+export type Friendship = Prisma.FriendshipModel;
+export type Conversation = Prisma.ConversationModel;
+export type ConversationMember = Prisma.ConversationMemberModel;
+export type Message = Prisma.MessageModel;
+export type GroupJoinRequest = Prisma.GroupJoinRequestModel;
+export type MessageReaction = Prisma.MessageReactionModel;

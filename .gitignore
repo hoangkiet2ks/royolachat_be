@@ -1,5 +1,5 @@
 # compiled output
-/dist
+# /dist  <-- commit dist to avoid Railway OOM build
 /node_modules
 /build
 
