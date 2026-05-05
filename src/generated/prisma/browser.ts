@@ -67,3 +67,13 @@ export type GroupJoinRequest = Prisma.GroupJoinRequestModel
  * 
  */
 export type MessageReaction = Prisma.MessageReactionModel
+/**
+ * Model BotModerator
+ * 
+ */
+export type BotModerator = Prisma.BotModeratorModel
+/**
+ * Model AiRateLimit
+ * 
+ */
+export type AiRateLimit = Prisma.AiRateLimitModel

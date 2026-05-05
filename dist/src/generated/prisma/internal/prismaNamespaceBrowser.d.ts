@@ -21,6 +21,8 @@ export declare const ModelName: {
     readonly Message: "Message";
     readonly GroupJoinRequest: "GroupJoinRequest";
     readonly MessageReaction: "MessageReaction";
+    readonly BotModerator: "BotModerator";
+    readonly AiRateLimit: "AiRateLimit";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
 export declare const TransactionIsolationLevel: {
@@ -42,6 +44,7 @@ export declare const UserScalarFieldEnum: {
     readonly appRole: "appRole";
     readonly totpSecret: "totpSecret";
     readonly status: "status";
+    readonly isBot: "isBot";
     readonly lastSeenAt: "lastSeenAt";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -134,6 +137,23 @@ export declare const MessageReactionScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum];
+export declare const BotModeratorScalarFieldEnum: {
+    readonly id: "id";
+    readonly conversationId: "conversationId";
+    readonly isEnabled: "isEnabled";
+    readonly enabledBy: "enabledBy";
+    readonly enabledAt: "enabledAt";
+    readonly updatedAt: "updatedAt";
+};
+export type BotModeratorScalarFieldEnum = (typeof BotModeratorScalarFieldEnum)[keyof typeof BotModeratorScalarFieldEnum];
+export declare const AiRateLimitScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly requestCount: "requestCount";
+    readonly windowStart: "windowStart";
+    readonly updatedAt: "updatedAt";
+};
+export type AiRateLimitScalarFieldEnum = (typeof AiRateLimitScalarFieldEnum)[keyof typeof AiRateLimitScalarFieldEnum];
 export declare const SortOrder: {
     readonly asc: "asc";
     readonly desc: "desc";

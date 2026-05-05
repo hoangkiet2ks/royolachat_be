@@ -167,6 +167,8 @@ export declare const ModelName: {
     readonly Message: "Message";
     readonly GroupJoinRequest: "GroupJoinRequest";
     readonly MessageReaction: "MessageReaction";
+    readonly BotModerator: "BotModerator";
+    readonly AiRateLimit: "AiRateLimit";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
 export interface TypeMapCb<GlobalOmitOptions = {}> extends runtime.Types.Utils.Fn<{
@@ -179,7 +181,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "verificationCode" | "device" | "refreshToken" | "friendship" | "conversation" | "conversationMember" | "message" | "groupJoinRequest" | "messageReaction";
+        modelProps: "user" | "verificationCode" | "device" | "refreshToken" | "friendship" | "conversation" | "conversationMember" | "message" | "groupJoinRequest" | "messageReaction" | "botModerator" | "aiRateLimit";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -923,6 +925,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        BotModerator: {
+            payload: Prisma.$BotModeratorPayload<ExtArgs>;
+            fields: Prisma.BotModeratorFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.BotModeratorFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.BotModeratorFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                findFirst: {
+                    args: Prisma.BotModeratorFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.BotModeratorFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                findMany: {
+                    args: Prisma.BotModeratorFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>[];
+                };
+                create: {
+                    args: Prisma.BotModeratorCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                createMany: {
+                    args: Prisma.BotModeratorCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.BotModeratorCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>[];
+                };
+                delete: {
+                    args: Prisma.BotModeratorDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                update: {
+                    args: Prisma.BotModeratorUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.BotModeratorDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.BotModeratorUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.BotModeratorUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>[];
+                };
+                upsert: {
+                    args: Prisma.BotModeratorUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$BotModeratorPayload>;
+                };
+                aggregate: {
+                    args: Prisma.BotModeratorAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateBotModerator>;
+                };
+                groupBy: {
+                    args: Prisma.BotModeratorGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.BotModeratorGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.BotModeratorCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.BotModeratorCountAggregateOutputType> | number;
+                };
+            };
+        };
+        AiRateLimit: {
+            payload: Prisma.$AiRateLimitPayload<ExtArgs>;
+            fields: Prisma.AiRateLimitFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.AiRateLimitFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.AiRateLimitFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                findFirst: {
+                    args: Prisma.AiRateLimitFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.AiRateLimitFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                findMany: {
+                    args: Prisma.AiRateLimitFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>[];
+                };
+                create: {
+                    args: Prisma.AiRateLimitCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                createMany: {
+                    args: Prisma.AiRateLimitCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.AiRateLimitCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>[];
+                };
+                delete: {
+                    args: Prisma.AiRateLimitDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                update: {
+                    args: Prisma.AiRateLimitUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.AiRateLimitDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.AiRateLimitUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.AiRateLimitUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>[];
+                };
+                upsert: {
+                    args: Prisma.AiRateLimitUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$AiRateLimitPayload>;
+                };
+                aggregate: {
+                    args: Prisma.AiRateLimitAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateAiRateLimit>;
+                };
+                groupBy: {
+                    args: Prisma.AiRateLimitGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AiRateLimitGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.AiRateLimitCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AiRateLimitCountAggregateOutputType> | number;
+                };
+            };
+        };
     };
 } & {
     other: {
@@ -966,6 +1116,7 @@ export declare const UserScalarFieldEnum: {
     readonly appRole: "appRole";
     readonly totpSecret: "totpSecret";
     readonly status: "status";
+    readonly isBot: "isBot";
     readonly lastSeenAt: "lastSeenAt";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -1058,6 +1209,23 @@ export declare const MessageReactionScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum];
+export declare const BotModeratorScalarFieldEnum: {
+    readonly id: "id";
+    readonly conversationId: "conversationId";
+    readonly isEnabled: "isEnabled";
+    readonly enabledBy: "enabledBy";
+    readonly enabledAt: "enabledAt";
+    readonly updatedAt: "updatedAt";
+};
+export type BotModeratorScalarFieldEnum = (typeof BotModeratorScalarFieldEnum)[keyof typeof BotModeratorScalarFieldEnum];
+export declare const AiRateLimitScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly requestCount: "requestCount";
+    readonly windowStart: "windowStart";
+    readonly updatedAt: "updatedAt";
+};
+export type AiRateLimitScalarFieldEnum = (typeof AiRateLimitScalarFieldEnum)[keyof typeof AiRateLimitScalarFieldEnum];
 export declare const SortOrder: {
     readonly asc: "asc";
     readonly desc: "desc";
@@ -1083,9 +1251,9 @@ export type EnumAppRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 export type ListEnumAppRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppRole[]'>;
 export type EnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserStatus'>;
 export type ListEnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserStatus[]'>;
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 export type EnumVerificationCodeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationCodeType'>;
 export type ListEnumVerificationCodeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationCodeType[]'>;
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 export type EnumFriendshipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FriendshipStatus'>;
 export type ListEnumFriendshipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FriendshipStatus[]'>;
 export type EnumMemberRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberRole'>;
@@ -1128,6 +1296,8 @@ export type GlobalOmitConfig = {
     message?: Prisma.MessageOmit;
     groupJoinRequest?: Prisma.GroupJoinRequestOmit;
     messageReaction?: Prisma.MessageReactionOmit;
+    botModerator?: Prisma.BotModeratorOmit;
+    aiRateLimit?: Prisma.AiRateLimitOmit;
 };
 export type LogLevel = 'info' | 'query' | 'warn' | 'error';
 export type LogDefinition = {

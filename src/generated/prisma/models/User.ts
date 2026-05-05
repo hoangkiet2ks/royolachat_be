@@ -46,6 +46,7 @@ export type UserMinAggregateOutputType = {
   appRole: $Enums.AppRole | null
   totpSecret: string | null
   status: $Enums.UserStatus | null
+  isBot: boolean | null
   lastSeenAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -63,6 +64,7 @@ export type UserMaxAggregateOutputType = {
   appRole: $Enums.AppRole | null
   totpSecret: string | null
   status: $Enums.UserStatus | null
+  isBot: boolean | null
   lastSeenAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -80,6 +82,7 @@ export type UserCountAggregateOutputType = {
   appRole: number
   totpSecret: number
   status: number
+  isBot: number
   lastSeenAt: number
   createdAt: number
   updatedAt: number
@@ -107,6 +110,7 @@ export type UserMinAggregateInputType = {
   appRole?: true
   totpSecret?: true
   status?: true
+  isBot?: true
   lastSeenAt?: true
   createdAt?: true
   updatedAt?: true
@@ -124,6 +128,7 @@ export type UserMaxAggregateInputType = {
   appRole?: true
   totpSecret?: true
   status?: true
+  isBot?: true
   lastSeenAt?: true
   createdAt?: true
   updatedAt?: true
@@ -141,6 +146,7 @@ export type UserCountAggregateInputType = {
   appRole?: true
   totpSecret?: true
   status?: true
+  isBot?: true
   lastSeenAt?: true
   createdAt?: true
   updatedAt?: true
@@ -245,6 +251,7 @@ export type UserGroupByOutputType = {
   appRole: $Enums.AppRole
   totpSecret: string | null
   status: $Enums.UserStatus
+  isBot: boolean
   lastSeenAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -285,6 +292,7 @@ export type UserWhereInput = {
   appRole?: Prisma.EnumAppRoleFilter<"User"> | $Enums.AppRole
   totpSecret?: Prisma.StringNullableFilter<"User"> | string | null
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
+  isBot?: Prisma.BoolFilter<"User"> | boolean
   lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -310,6 +318,7 @@ export type UserOrderByWithRelationInput = {
   appRole?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  isBot?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -338,6 +347,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   birthday?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   appRole?: Prisma.EnumAppRoleFilter<"User"> | $Enums.AppRole
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
+  isBot?: Prisma.BoolFilter<"User"> | boolean
   lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -363,6 +373,7 @@ export type UserOrderByWithAggregationInput = {
   appRole?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  isBot?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -388,6 +399,7 @@ export type UserScalarWhereWithAggregatesInput = {
   appRole?: Prisma.EnumAppRoleWithAggregatesFilter<"User"> | $Enums.AppRole
   totpSecret?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   status?: Prisma.EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
+  isBot?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   lastSeenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -404,6 +416,7 @@ export type UserCreateInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -429,6 +442,7 @@ export type UserUncheckedCreateInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -453,6 +467,7 @@ export type UserUpdateInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -478,6 +493,7 @@ export type UserUncheckedUpdateInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -503,6 +519,7 @@ export type UserCreateManyInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -519,6 +536,7 @@ export type UserUpdateManyMutationInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -536,6 +554,7 @@ export type UserUncheckedUpdateManyInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -553,6 +572,7 @@ export type UserCountOrderByAggregateInput = {
   appRole?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isBot?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -574,6 +594,7 @@ export type UserMaxOrderByAggregateInput = {
   appRole?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isBot?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -591,6 +612,7 @@ export type UserMinOrderByAggregateInput = {
   appRole?: Prisma.SortOrder
   totpSecret?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isBot?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -623,6 +645,10 @@ export type EnumAppRoleFieldUpdateOperationsInput = {
 
 export type EnumUserStatusFieldUpdateOperationsInput = {
   set?: $Enums.UserStatus
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -760,6 +786,7 @@ export type UserCreateWithoutDevicesInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -784,6 +811,7 @@ export type UserUncheckedCreateWithoutDevicesInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -823,6 +851,7 @@ export type UserUpdateWithoutDevicesInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -847,6 +876,7 @@ export type UserUncheckedUpdateWithoutDevicesInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +900,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -894,6 +925,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -933,6 +965,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -957,6 +990,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -980,6 +1014,7 @@ export type UserCreateWithoutFriendRequestsSentInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1004,6 +1039,7 @@ export type UserUncheckedCreateWithoutFriendRequestsSentInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1032,6 +1068,7 @@ export type UserCreateWithoutFriendRequestsReceivedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1056,6 +1093,7 @@ export type UserUncheckedCreateWithoutFriendRequestsReceivedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1095,6 +1133,7 @@ export type UserUpdateWithoutFriendRequestsSentInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1119,6 +1158,7 @@ export type UserUncheckedUpdateWithoutFriendRequestsSentInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1153,6 +1193,7 @@ export type UserUpdateWithoutFriendRequestsReceivedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1177,6 +1218,7 @@ export type UserUncheckedUpdateWithoutFriendRequestsReceivedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1200,6 +1242,7 @@ export type UserCreateWithoutConversationJoinedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1224,6 +1267,7 @@ export type UserUncheckedCreateWithoutConversationJoinedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1263,6 +1307,7 @@ export type UserUpdateWithoutConversationJoinedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1287,6 +1332,7 @@ export type UserUncheckedUpdateWithoutConversationJoinedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1310,6 +1356,7 @@ export type UserCreateWithoutMessagesInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1334,6 +1381,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1373,6 +1421,7 @@ export type UserUpdateWithoutMessagesInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1397,6 +1446,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1420,6 +1470,7 @@ export type UserCreateWithoutRoupJoinRequestsReceivedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1444,6 +1495,7 @@ export type UserUncheckedCreateWithoutRoupJoinRequestsReceivedInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1472,6 +1524,7 @@ export type UserCreateWithoutGroupJoinRequestsSentInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1496,6 +1549,7 @@ export type UserUncheckedCreateWithoutGroupJoinRequestsSentInput = {
   appRole?: $Enums.AppRole
   totpSecret?: string | null
   status?: $Enums.UserStatus
+  isBot?: boolean
   lastSeenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1535,6 +1589,7 @@ export type UserUpdateWithoutRoupJoinRequestsReceivedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1559,6 +1614,7 @@ export type UserUncheckedUpdateWithoutRoupJoinRequestsReceivedInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1593,6 +1649,7 @@ export type UserUpdateWithoutGroupJoinRequestsSentInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1617,6 +1674,7 @@ export type UserUncheckedUpdateWithoutGroupJoinRequestsSentInput = {
   appRole?: Prisma.EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
   totpSecret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isBot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1735,6 +1793,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   appRole?: boolean
   totpSecret?: boolean
   status?: boolean
+  isBot?: boolean
   lastSeenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1761,6 +1820,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   appRole?: boolean
   totpSecret?: boolean
   status?: boolean
+  isBot?: boolean
   lastSeenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1778,6 +1838,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   appRole?: boolean
   totpSecret?: boolean
   status?: boolean
+  isBot?: boolean
   lastSeenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1795,12 +1856,13 @@ export type UserSelectScalar = {
   appRole?: boolean
   totpSecret?: boolean
   status?: boolean
+  isBot?: boolean
   lastSeenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "phoneNumber" | "avatar" | "banner" | "birthday" | "appRole" | "totpSecret" | "status" | "lastSeenAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "phoneNumber" | "avatar" | "banner" | "birthday" | "appRole" | "totpSecret" | "status" | "isBot" | "lastSeenAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   devices?: boolean | Prisma.User$devicesArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
@@ -1839,6 +1901,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     appRole: $Enums.AppRole
     totpSecret: string | null
     status: $Enums.UserStatus
+    isBot: boolean
     lastSeenAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -2284,6 +2347,7 @@ export interface UserFieldRefs {
   readonly appRole: Prisma.FieldRef<"User", 'AppRole'>
   readonly totpSecret: Prisma.FieldRef<"User", 'String'>
   readonly status: Prisma.FieldRef<"User", 'UserStatus'>
+  readonly isBot: Prisma.FieldRef<"User", 'Boolean'>
   readonly lastSeenAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>

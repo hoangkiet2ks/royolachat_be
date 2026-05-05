@@ -2,13 +2,15 @@ import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { JwtService } from '@nestjs/jwt';
+import { AiService } from '../ai/ai.service';
 export declare class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatService;
     private readonly jwtService;
+    private readonly aiService;
     server: Server;
     private userSockets;
     private activeCallParticipants;
-    constructor(chatService: ChatService, jwtService: JwtService);
+    constructor(chatService: ChatService, jwtService: JwtService, aiService: AiService);
     handleConnection(client: Socket): Promise<void>;
     handleDisconnect(client: Socket): void;
     handleMessage(client: Socket, payload: {

@@ -60,7 +60,9 @@ export const ModelName = {
   ConversationMember: 'ConversationMember',
   Message: 'Message',
   GroupJoinRequest: 'GroupJoinRequest',
-  MessageReaction: 'MessageReaction'
+  MessageReaction: 'MessageReaction',
+  BotModerator: 'BotModerator',
+  AiRateLimit: 'AiRateLimit'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -91,6 +93,7 @@ export const UserScalarFieldEnum = {
   appRole: 'appRole',
   totpSecret: 'totpSecret',
   status: 'status',
+  isBot: 'isBot',
   lastSeenAt: 'lastSeenAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -211,6 +214,29 @@ export const MessageReactionScalarFieldEnum = {
 } as const
 
 export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum]
+
+
+export const BotModeratorScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  isEnabled: 'isEnabled',
+  enabledBy: 'enabledBy',
+  enabledAt: 'enabledAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BotModeratorScalarFieldEnum = (typeof BotModeratorScalarFieldEnum)[keyof typeof BotModeratorScalarFieldEnum]
+
+
+export const AiRateLimitScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  requestCount: 'requestCount',
+  windowStart: 'windowStart',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AiRateLimitScalarFieldEnum = (typeof AiRateLimitScalarFieldEnum)[keyof typeof AiRateLimitScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
+exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/index-browser"));
 exports.Decimal = runtime.Decimal;
 exports.NullTypes = {
@@ -54,7 +54,9 @@ exports.ModelName = {
     ConversationMember: 'ConversationMember',
     Message: 'Message',
     GroupJoinRequest: 'GroupJoinRequest',
-    MessageReaction: 'MessageReaction'
+    MessageReaction: 'MessageReaction',
+    BotModerator: 'BotModerator',
+    AiRateLimit: 'AiRateLimit'
 };
 exports.TransactionIsolationLevel = {
     ReadUncommitted: 'ReadUncommitted',
@@ -74,6 +76,7 @@ exports.UserScalarFieldEnum = {
     appRole: 'appRole',
     totpSecret: 'totpSecret',
     status: 'status',
+    isBot: 'isBot',
     lastSeenAt: 'lastSeenAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -155,6 +158,21 @@ exports.MessageReactionScalarFieldEnum = {
     userId: 'userId',
     emoji: 'emoji',
     createdAt: 'createdAt'
+};
+exports.BotModeratorScalarFieldEnum = {
+    id: 'id',
+    conversationId: 'conversationId',
+    isEnabled: 'isEnabled',
+    enabledBy: 'enabledBy',
+    enabledAt: 'enabledAt',
+    updatedAt: 'updatedAt'
+};
+exports.AiRateLimitScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    requestCount: 'requestCount',
+    windowStart: 'windowStart',
+    updatedAt: 'updatedAt'
 };
 exports.SortOrder = {
     asc: 'asc',

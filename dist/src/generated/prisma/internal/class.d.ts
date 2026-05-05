@@ -58,5 +58,11 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get messageReaction(): Prisma.MessageReactionDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    get botModerator(): Prisma.BotModeratorDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get aiRateLimit(): Prisma.AiRateLimitDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
 }
 export declare function getPrismaClientClass(): PrismaClientConstructor;

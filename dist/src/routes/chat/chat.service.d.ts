@@ -25,6 +25,7 @@ export declare class ChatService {
         appRole: import("../../generated/prisma/enums").AppRole;
         totpSecret: string | null;
         status: import("../../generated/prisma/enums").UserStatus;
+        isBot: boolean;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
@@ -104,6 +105,7 @@ export declare class ChatService {
         name: string;
         avatar: string | null;
         partnerId: number | undefined;
+        partnerIsBot: boolean;
         myRole?: undefined;
         members?: undefined;
     } | {
@@ -119,6 +121,7 @@ export declare class ChatService {
             role: import("../../generated/prisma/enums").MemberRole;
         }[];
         partnerId?: undefined;
+        partnerIsBot?: undefined;
     } | null>;
     uploadToS3(file: Express.Multer.File): Promise<string>;
     recallMessage(messageId: number, userId: number): Promise<{

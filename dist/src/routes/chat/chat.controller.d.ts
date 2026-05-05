@@ -47,6 +47,7 @@ export declare class ChatController {
         name: string;
         avatar: string | null;
         partnerId: number | undefined;
+        partnerIsBot: boolean;
         myRole?: undefined;
         members?: undefined;
     } | {
@@ -62,6 +63,7 @@ export declare class ChatController {
             role: import("../../generated/prisma/enums").MemberRole;
         }[];
         partnerId?: undefined;
+        partnerIsBot?: undefined;
     } | null>;
     getConversations(user: any): Promise<{
         id: string;

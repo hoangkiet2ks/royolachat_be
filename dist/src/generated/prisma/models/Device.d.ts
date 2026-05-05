@@ -338,9 +338,6 @@ export type DeviceUncheckedUpdateManyWithoutUserNestedInput = {
     updateMany?: Prisma.DeviceUpdateManyWithWhereWithoutUserInput | Prisma.DeviceUpdateManyWithWhereWithoutUserInput[];
     deleteMany?: Prisma.DeviceScalarWhereInput | Prisma.DeviceScalarWhereInput[];
 };
-export type BoolFieldUpdateOperationsInput = {
-    set?: boolean;
-};
 export type DeviceCreateNestedOneWithoutRefreshTokensInput = {
     create?: Prisma.XOR<Prisma.DeviceCreateWithoutRefreshTokensInput, Prisma.DeviceUncheckedCreateWithoutRefreshTokensInput>;
     connectOrCreate?: Prisma.DeviceCreateOrConnectWithoutRefreshTokensInput;

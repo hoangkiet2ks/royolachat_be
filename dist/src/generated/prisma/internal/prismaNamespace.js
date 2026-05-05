@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 exports.PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError;
 exports.PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError;
@@ -69,7 +69,9 @@ exports.ModelName = {
     ConversationMember: 'ConversationMember',
     Message: 'Message',
     GroupJoinRequest: 'GroupJoinRequest',
-    MessageReaction: 'MessageReaction'
+    MessageReaction: 'MessageReaction',
+    BotModerator: 'BotModerator',
+    AiRateLimit: 'AiRateLimit'
 };
 exports.TransactionIsolationLevel = runtime.makeStrictEnum({
     ReadUncommitted: 'ReadUncommitted',
@@ -89,6 +91,7 @@ exports.UserScalarFieldEnum = {
     appRole: 'appRole',
     totpSecret: 'totpSecret',
     status: 'status',
+    isBot: 'isBot',
     lastSeenAt: 'lastSeenAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -170,6 +173,21 @@ exports.MessageReactionScalarFieldEnum = {
     userId: 'userId',
     emoji: 'emoji',
     createdAt: 'createdAt'
+};
+exports.BotModeratorScalarFieldEnum = {
+    id: 'id',
+    conversationId: 'conversationId',
+    isEnabled: 'isEnabled',
+    enabledBy: 'enabledBy',
+    enabledAt: 'enabledAt',
+    updatedAt: 'updatedAt'
+};
+exports.AiRateLimitScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    requestCount: 'requestCount',
+    windowStart: 'windowStart',
+    updatedAt: 'updatedAt'
 };
 exports.SortOrder = {
     asc: 'asc',

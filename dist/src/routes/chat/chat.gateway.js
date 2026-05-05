@@ -17,10 +17,12 @@ const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
 const chat_service_1 = require("./chat.service");
 const jwt_1 = require("@nestjs/jwt");
+const ai_service_1 = require("../ai/ai.service");
 let ChatGateway = class ChatGateway {
-    constructor(chatService, jwtService) {
+    constructor(chatService, jwtService, aiService) {
         this.chatService = chatService;
         this.jwtService = jwtService;
+        this.aiService = aiService;
         this.userSockets = new Map();
         this.activeCallParticipants = new Map();
     }
@@ -103,6 +105,43 @@ let ChatGateway = class ChatGateway {
                 partnerSockets?.forEach(socketId => this.server.to(socketId).emit('newMessage', savedMessage));
                 const mySockets = this.userSockets.get(userId);
                 mySockets?.forEach(socketId => this.server.to(socketId).emit('newMessage', savedMessage));
+            }
+            if (payload.type === 'TEXT' && payload.content) {
+                const content = payload.content;
+                if (!conversationInfo?.isGroup && conversationInfo?.partnerIsBot) {
+                    const userSocketIds = this.userSockets.get(userId) || [];
+                    userSocketIds.forEach(sid => this.server.to(sid).emit('botTyping', { conversationId: payload.conversationId }));
+                    setImmediate(() => {
+                        this.aiService.processMessage({
+                            conversationId: payload.conversationId,
+                            content,
+                            userId,
+                            server: this.server,
+                            userSockets: this.userSockets,
+                        }).catch(err => console.error('[Gateway] processMessage error:', err));
+                    });
+                }
+                if (conversationInfo?.isGroup && (0, ai_service_1.isBotMention)(content)) {
+                    if (!this.aiService.checkGroupRateLimit(payload.conversationId)) {
+                        const userSocketIds = this.userSockets.get(userId) || [];
+                        userSocketIds.forEach(sid => this.server.to(sid).emit('botRateLimit', {
+                            message: 'Bot đang xử lý yêu cầu trước, vui lòng đợi 3 giây.',
+                        }));
+                    }
+                    else {
+                        this.aiService.recordGroupRequest(payload.conversationId);
+                        const question = (0, ai_service_1.extractMentionContent)(content);
+                        this.server.to(`conversation_${payload.conversationId}`).emit('botTyping', { conversationId: payload.conversationId });
+                        setImmediate(() => {
+                            this.aiService.processGroupMention({
+                                conversationId: payload.conversationId,
+                                question,
+                                userId,
+                                server: this.server,
+                            }).catch(err => console.error('[Gateway] processGroupMention error:', err));
+                        });
+                    }
+                }
             }
             return { status: 'success', data: savedMessage };
         }
@@ -482,6 +521,7 @@ exports.ChatGateway = ChatGateway = __decorate([
         pingInterval: 25000,
     }),
     __metadata("design:paramtypes", [chat_service_1.ChatService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        ai_service_1.AiService])
 ], ChatGateway);
 //# sourceMappingURL=chat.gateway.js.map

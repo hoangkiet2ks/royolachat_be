@@ -141,18 +141,20 @@ let ChatService = class ChatService {
     async getConversationInfo(conversationId, currentUserId) {
         const conv = await this.prisma.conversation.findUnique({
             where: { id: conversationId },
-            include: { members: { include: { user: { select: { id: true, name: true, avatar: true } } } } }
+            include: { members: { include: { user: { select: { id: true, name: true, avatar: true, isBot: true } } } } }
         });
         if (!conv)
             return null;
         if (!conv.isGroup) {
-            const friend = conv.members.find(m => m.userId !== currentUserId)?.user;
+            const partnerMember = conv.members.find(m => m.userId !== currentUserId);
+            const friend = partnerMember?.user;
             return {
                 id: conv.id,
                 isGroup: false,
                 name: friend?.name || 'Người dùng',
                 avatar: friend?.avatar || null,
-                partnerId: friend?.id
+                partnerId: friend?.id,
+                partnerIsBot: friend?.isBot ?? false,
             };
         }
         const myRole = conv.members.find(m => m.userId === currentUserId)?.role || 'MEMBER';

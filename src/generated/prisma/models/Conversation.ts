@@ -227,6 +227,7 @@ export type ConversationWhereInput = {
   members?: Prisma.ConversationMemberListRelationFilter
   messages?: Prisma.MessageListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
+  botModerator?: Prisma.XOR<Prisma.BotModeratorNullableScalarRelationFilter, Prisma.BotModeratorWhereInput> | null
 }
 
 export type ConversationOrderByWithRelationInput = {
@@ -239,6 +240,7 @@ export type ConversationOrderByWithRelationInput = {
   members?: Prisma.ConversationMemberOrderByRelationAggregateInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
   joinRequests?: Prisma.GroupJoinRequestOrderByRelationAggregateInput
+  botModerator?: Prisma.BotModeratorOrderByWithRelationInput
 }
 
 export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -254,6 +256,7 @@ export type ConversationWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.ConversationMemberListRelationFilter
   messages?: Prisma.MessageListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
+  botModerator?: Prisma.XOR<Prisma.BotModeratorNullableScalarRelationFilter, Prisma.BotModeratorWhereInput> | null
 }, "id">
 
 export type ConversationOrderByWithAggregationInput = {
@@ -291,6 +294,7 @@ export type ConversationCreateInput = {
   members?: Prisma.ConversationMemberCreateNestedManyWithoutConversationInput
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateInput = {
@@ -303,6 +307,7 @@ export type ConversationUncheckedCreateInput = {
   members?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutConversationInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorUncheckedCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationUpdateInput = {
@@ -314,6 +319,7 @@ export type ConversationUpdateInput = {
   members?: Prisma.ConversationMemberUpdateManyWithoutConversationNestedInput
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateInput = {
@@ -326,6 +332,7 @@ export type ConversationUncheckedUpdateInput = {
   members?: Prisma.ConversationMemberUncheckedUpdateManyWithoutConversationNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUncheckedUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationCreateManyInput = {
@@ -436,6 +443,20 @@ export type ConversationUpdateOneRequiredWithoutJoinRequestsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutJoinRequestsInput, Prisma.ConversationUpdateWithoutJoinRequestsInput>, Prisma.ConversationUncheckedUpdateWithoutJoinRequestsInput>
 }
 
+export type ConversationCreateNestedOneWithoutBotModeratorInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBotModeratorInput, Prisma.ConversationUncheckedCreateWithoutBotModeratorInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBotModeratorInput
+  connect?: Prisma.ConversationWhereUniqueInput
+}
+
+export type ConversationUpdateOneRequiredWithoutBotModeratorNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBotModeratorInput, Prisma.ConversationUncheckedCreateWithoutBotModeratorInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBotModeratorInput
+  upsert?: Prisma.ConversationUpsertWithoutBotModeratorInput
+  connect?: Prisma.ConversationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutBotModeratorInput, Prisma.ConversationUpdateWithoutBotModeratorInput>, Prisma.ConversationUncheckedUpdateWithoutBotModeratorInput>
+}
+
 export type ConversationCreateWithoutMembersInput = {
   isGroup?: boolean
   name?: string | null
@@ -444,6 +465,7 @@ export type ConversationCreateWithoutMembersInput = {
   updatedAt?: Date | string
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutMembersInput = {
@@ -455,6 +477,7 @@ export type ConversationUncheckedCreateWithoutMembersInput = {
   updatedAt?: Date | string
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorUncheckedCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutMembersInput = {
@@ -481,6 +504,7 @@ export type ConversationUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutMembersInput = {
@@ -492,6 +516,7 @@ export type ConversationUncheckedUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUncheckedUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationCreateWithoutMessagesInput = {
@@ -502,6 +527,7 @@ export type ConversationCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   members?: Prisma.ConversationMemberCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -513,6 +539,7 @@ export type ConversationUncheckedCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   members?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutConversationInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorUncheckedCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutMessagesInput = {
@@ -539,6 +566,7 @@ export type ConversationUpdateWithoutMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ConversationMemberUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -550,6 +578,7 @@ export type ConversationUncheckedUpdateWithoutMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ConversationMemberUncheckedUpdateManyWithoutConversationNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUncheckedUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationCreateWithoutJoinRequestsInput = {
@@ -560,6 +589,7 @@ export type ConversationCreateWithoutJoinRequestsInput = {
   updatedAt?: Date | string
   members?: Prisma.ConversationMemberCreateNestedManyWithoutConversationInput
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutJoinRequestsInput = {
@@ -571,6 +601,7 @@ export type ConversationUncheckedCreateWithoutJoinRequestsInput = {
   updatedAt?: Date | string
   members?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutConversationInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
+  botModerator?: Prisma.BotModeratorUncheckedCreateNestedOneWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutJoinRequestsInput = {
@@ -597,6 +628,7 @@ export type ConversationUpdateWithoutJoinRequestsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ConversationMemberUpdateManyWithoutConversationNestedInput
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUpdateOneWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutJoinRequestsInput = {
@@ -608,6 +640,69 @@ export type ConversationUncheckedUpdateWithoutJoinRequestsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.ConversationMemberUncheckedUpdateManyWithoutConversationNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
+  botModerator?: Prisma.BotModeratorUncheckedUpdateOneWithoutConversationNestedInput
+}
+
+export type ConversationCreateWithoutBotModeratorInput = {
+  isGroup?: boolean
+  name?: string | null
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.ConversationMemberCreateNestedManyWithoutConversationInput
+  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationUncheckedCreateWithoutBotModeratorInput = {
+  id?: number
+  isGroup?: boolean
+  name?: string | null
+  avatar?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutConversationInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationCreateOrConnectWithoutBotModeratorInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutBotModeratorInput, Prisma.ConversationUncheckedCreateWithoutBotModeratorInput>
+}
+
+export type ConversationUpsertWithoutBotModeratorInput = {
+  update: Prisma.XOR<Prisma.ConversationUpdateWithoutBotModeratorInput, Prisma.ConversationUncheckedUpdateWithoutBotModeratorInput>
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutBotModeratorInput, Prisma.ConversationUncheckedCreateWithoutBotModeratorInput>
+  where?: Prisma.ConversationWhereInput
+}
+
+export type ConversationUpdateToOneWithWhereWithoutBotModeratorInput = {
+  where?: Prisma.ConversationWhereInput
+  data: Prisma.XOR<Prisma.ConversationUpdateWithoutBotModeratorInput, Prisma.ConversationUncheckedUpdateWithoutBotModeratorInput>
+}
+
+export type ConversationUpdateWithoutBotModeratorInput = {
+  isGroup?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.ConversationMemberUpdateManyWithoutConversationNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationUncheckedUpdateWithoutBotModeratorInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  isGroup?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.ConversationMemberUncheckedUpdateManyWithoutConversationNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 
@@ -669,6 +764,7 @@ export type ConversationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   members?: boolean | Prisma.Conversation$membersArgs<ExtArgs>
   messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   joinRequests?: boolean | Prisma.Conversation$joinRequestsArgs<ExtArgs>
+  botModerator?: boolean | Prisma.Conversation$botModeratorArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
@@ -704,6 +800,7 @@ export type ConversationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   members?: boolean | Prisma.Conversation$membersArgs<ExtArgs>
   messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   joinRequests?: boolean | Prisma.Conversation$joinRequestsArgs<ExtArgs>
+  botModerator?: boolean | Prisma.Conversation$botModeratorArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -715,6 +812,7 @@ export type $ConversationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     members: Prisma.$ConversationMemberPayload<ExtArgs>[]
     messages: Prisma.$MessagePayload<ExtArgs>[]
     joinRequests: Prisma.$GroupJoinRequestPayload<ExtArgs>[]
+    botModerator: Prisma.$BotModeratorPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1120,6 +1218,7 @@ export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends run
   members<T extends Prisma.Conversation$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.Conversation$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   joinRequests<T extends Prisma.Conversation$joinRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$joinRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupJoinRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  botModerator<T extends Prisma.Conversation$botModeratorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$botModeratorArgs<ExtArgs>>): Prisma.Prisma__BotModeratorClient<runtime.Types.Result.GetResult<Prisma.$BotModeratorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1612,6 +1711,25 @@ export type Conversation$joinRequestsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.GroupJoinRequestScalarFieldEnum | Prisma.GroupJoinRequestScalarFieldEnum[]
+}
+
+/**
+ * Conversation.botModerator
+ */
+export type Conversation$botModeratorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BotModerator
+   */
+  select?: Prisma.BotModeratorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BotModerator
+   */
+  omit?: Prisma.BotModeratorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BotModeratorInclude<ExtArgs> | null
+  where?: Prisma.BotModeratorWhereInput
 }
 
 /**

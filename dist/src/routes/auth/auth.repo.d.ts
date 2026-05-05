@@ -32,6 +32,7 @@ export declare class AuthRepository {
         appRole: import("@/generated/prisma/client").AppRole;
         totpSecret: string | null;
         status: import("@/generated/prisma/client").UserStatus;
+        isBot: boolean;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
@@ -106,6 +107,7 @@ export declare class AuthRepository {
             appRole: import("@/generated/prisma/client").AppRole;
             totpSecret: string | null;
             status: import("@/generated/prisma/client").UserStatus;
+            isBot: boolean;
             lastSeenAt: Date | null;
             createdAt: Date;
             updatedAt: Date;

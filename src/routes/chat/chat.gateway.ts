@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { JwtService } from '@nestjs/jwt';
+import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service';
 
 @WebSocketGateway({
   cors: {
@@ -33,6 +34,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
+    private readonly aiService: AiService,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -102,7 +104,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() payload: { conversationId: number; content?: string; fileUrl?: string; type: 'TEXT' | 'IMAGE' | 'FILE' }
   ) {
     try {
-      const userId = client.data.userId;
+      const userId = client.data.userId as number;
       if (!userId) throw new Error('Chưa xác thực');
 
       // 1. Lưu vào Database
@@ -114,28 +116,66 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         type: payload.type || 'TEXT',
       });
 
-      // 2. Lấy danh sách TẤT CẢ các thành viên trong nhóm chat này
+      // 2. Lấy thông tin conversation
       const conversationInfo = await this.chatService.getConversationInfo(payload.conversationId, userId);
       
-      // 3. Bắn tin nhắn đích danh tới từng người (Đảm bảo không bị trượt dù họ chưa F5)
+      // 3. Broadcast tin nhắn tới tất cả members
       if (conversationInfo && conversationInfo.members) {
         conversationInfo.members.forEach(member => {
           const memberSockets = this.userSockets.get(member.id);
           if (memberSockets) {
             memberSockets.forEach(socketId => {
-              // Gửi tới tất cả các tab/thiết bị mà người đó đang mở
               this.server.to(socketId).emit('newMessage', savedMessage);
             });
           }
         });
       } else if (!conversationInfo?.isGroup) {
-        // Xử lý fallback cho chat 1-1 nếu hàm getConversationInfo trả về partnerId
         const partnerSockets = this.userSockets.get(conversationInfo?.partnerId as number);
         partnerSockets?.forEach(socketId => this.server.to(socketId).emit('newMessage', savedMessage));
-        
-        // Đừng quên gửi lại cho chính mình ở các tab khác
         const mySockets = this.userSockets.get(userId);
         mySockets?.forEach(socketId => this.server.to(socketId).emit('newMessage', savedMessage));
+      }
+
+      // 4. AI Bot handling — non-blocking via setImmediate
+      if (payload.type === 'TEXT' && payload.content) {
+        const content = payload.content;
+
+        // 4a. Chat 1-1 với bot
+        if (!conversationInfo?.isGroup && conversationInfo?.partnerIsBot) {
+          const userSocketIds = this.userSockets.get(userId) || [];
+          userSocketIds.forEach(sid => this.server.to(sid).emit('botTyping', { conversationId: payload.conversationId }));
+          setImmediate(() => {
+            this.aiService.processMessage({
+              conversationId: payload.conversationId,
+              content,
+              userId,
+              server: this.server,
+              userSockets: this.userSockets,
+            }).catch(err => console.error('[Gateway] processMessage error:', err));
+          });
+        }
+
+        // 4b. @RoyolaBot mention trong group
+        if (conversationInfo?.isGroup && isBotMention(content)) {
+          if (!this.aiService.checkGroupRateLimit(payload.conversationId)) {
+            const userSocketIds = this.userSockets.get(userId) || [];
+            userSocketIds.forEach(sid => this.server.to(sid).emit('botRateLimit', {
+              message: 'Bot đang xử lý yêu cầu trước, vui lòng đợi 3 giây.',
+            }));
+          } else {
+            this.aiService.recordGroupRequest(payload.conversationId);
+            const question = extractMentionContent(content);
+            this.server.to(`conversation_${payload.conversationId}`).emit('botTyping', { conversationId: payload.conversationId });
+            setImmediate(() => {
+              this.aiService.processGroupMention({
+                conversationId: payload.conversationId,
+                question,
+                userId,
+                server: this.server,
+              }).catch(err => console.error('[Gateway] processGroupMention error:', err));
+            });
+          }
+        }
       }
 
       return { status: 'success', data: savedMessage };

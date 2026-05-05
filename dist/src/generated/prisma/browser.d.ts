@@ -12,3 +12,5 @@ export type ConversationMember = Prisma.ConversationMemberModel;
 export type Message = Prisma.MessageModel;
 export type GroupJoinRequest = Prisma.GroupJoinRequestModel;
 export type MessageReaction = Prisma.MessageReactionModel;
+export type BotModerator = Prisma.BotModeratorModel;
+export type AiRateLimit = Prisma.AiRateLimitModel;
