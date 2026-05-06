@@ -34,7 +34,11 @@ export class AppModule implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.seedBotUser();
+    try {
+      await this.seedBotUser();
+    } catch (error) {
+      console.error('[Bot] Failed to seed bot user, AI features will be disabled:', error.message);
+    }
   }
 
   private async seedBotUser() {
@@ -53,10 +57,16 @@ export class AppModule implements OnModuleInit {
         },
       });
       process.env.BOT_USER_ID = String(bot.id);
-      this.aiService.setBotUserId(bot.id);
-      console.log(`[Bot] RoyolaBot seeded with id: ${bot.id}`);
+      
+      try {
+        this.aiService.setBotUserId(bot.id);
+        console.log(`[Bot] RoyolaBot seeded with id: ${bot.id}`);
+      } catch (aiError) {
+        console.error('[Bot] AI Service initialization failed, bot will not respond:', aiError.message);
+      }
     } catch (err) {
       console.error('[Bot] Failed to seed bot user:', err);
+      throw err;
     }
   }
 }
