@@ -511,13 +511,7 @@ __decorate([
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
-            origin: [
-                'https://royolachat.netlify.app',
-                'http://localhost:3300',
-                'http://localhost:5173',
-                /\.netlify\.app$/,
-                /\.nip\.io$/,
-            ],
+            origin: true,
             credentials: true,
         },
         namespace: '/chat',

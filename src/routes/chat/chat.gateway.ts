@@ -14,13 +14,7 @@ import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service
 
 @WebSocketGateway({
   cors: {
-    origin: [
-      'https://royolachat.netlify.app',
-      'http://localhost:3300',
-      'http://localhost:5173',
-      /\.netlify\.app$/,
-      /\.nip\.io$/,
-    ],
+    origin: true, // Cho phép tất cả origin
     credentials: true,
   },
   namespace: '/chat',
