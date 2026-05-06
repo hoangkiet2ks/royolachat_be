@@ -13,11 +13,11 @@ import { JwtService } from '@nestjs/jwt';
 import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service';
 
 @WebSocketGateway({
-  namespace: '/chat',
   cors: {
-    origin: (origin, callback) => callback(null, true),
+    origin: '*',
     credentials: true,
   },
+  namespace: '/chat',
   transports: ['polling', 'websocket'],
   allowEIO3: true,
   pingTimeout: 60000,
