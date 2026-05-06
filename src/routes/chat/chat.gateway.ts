@@ -14,7 +14,13 @@ import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: [
+      'https://royolachat.netlify.app',
+      'http://localhost:3300',
+      'http://localhost:5173',
+      /\.netlify\.app$/,
+      /\.nip\.io$/,
+    ],
     credentials: true,
   },
   namespace: '/chat',
