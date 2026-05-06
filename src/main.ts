@@ -4,13 +4,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: [
-      'https://royolachat.netlify.app',
-      'http://localhost:3300',
-      'http://localhost:5173',
-      /\.netlify\.app$/,
-      /\.nip\.io$/,
-    ],
+    origin: true, // Cho phép tất cả origin, tránh lỗi duplicate CORS header
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type'],

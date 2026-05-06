@@ -5,13 +5,7 @@ const app_module_1 = require("./app.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
-        origin: [
-            'https://royolachat.netlify.app',
-            'http://localhost:3300',
-            'http://localhost:5173',
-            /\.netlify\.app$/,
-            /\.nip\.io$/,
-        ],
+        origin: true,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Authorization', 'Content-Type'],
