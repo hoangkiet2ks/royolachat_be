@@ -4,10 +4,13 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Bật CORS cho phép tất cả origin (cho mobile app và web)
+  // Bật CORS với function để tránh duplicate header
   app.enableCors({
-    origin: '*', // Cho phép TẤT CẢ origin (wildcard)
-    credentials: false, // Phải set false khi dùng wildcard
+    origin: (origin, callback) => {
+      // Luôn cho phép, không quan tâm origin là gì
+      callback(null, origin || '*');
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
   });
