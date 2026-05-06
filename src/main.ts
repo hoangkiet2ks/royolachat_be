@@ -3,8 +3,13 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // CORS config với callback để tránh duplicate
   app.enableCors({
-    origin: true, // Cho phép tất cả origin, tránh lỗi duplicate CORS header
+    origin: (origin, callback) => {
+      // Cho phép tất cả origin
+      callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type'],
