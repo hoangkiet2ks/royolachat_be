@@ -510,10 +510,6 @@ __decorate([
 ], ChatGateway.prototype, "handleToggleReaction", null);
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
-        cors: {
-            origin: true,
-            credentials: true,
-        },
         namespace: '/chat',
         transports: ['polling', 'websocket'],
         allowEIO3: true,

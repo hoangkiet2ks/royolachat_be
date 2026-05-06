@@ -13,10 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service';
 
 @WebSocketGateway({
-  cors: {
-    origin: true, // Cho phép tất cả origin
-    credentials: true,
-  },
+  // Bỏ cors config, để NestJS main.ts xử lý CORS chung
   namespace: '/chat',
   transports: ['polling', 'websocket'],
   allowEIO3: true,
