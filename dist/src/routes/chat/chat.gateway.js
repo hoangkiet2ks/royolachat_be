@@ -511,6 +511,10 @@ __decorate([
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         namespace: '/chat',
+        cors: {
+            origin: (origin, callback) => callback(null, true),
+            credentials: true,
+        },
         transports: ['polling', 'websocket'],
         allowEIO3: true,
         pingTimeout: 60000,
