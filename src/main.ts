@@ -6,7 +6,11 @@ async function bootstrap() {
   
   // Bật CORS cho phép tất cả origin (cho mobile app và web)
   app.enableCors({
-    origin: true, // Cho phép tất cả origin
+    origin: (origin, callback) => {
+      console.log('[CORS] Request from origin:', origin);
+      // Cho phép tất cả origin
+      callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
