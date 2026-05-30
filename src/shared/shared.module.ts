@@ -7,6 +7,7 @@ import { EmailService } from './services/email.service'
 import { AccessTokenGuard } from './guards/access-token.guard'
 import { S3Service } from './services/s3.service'
 import { APP_GUARD } from '@nestjs/core'
+import { TwoFactorService } from './services/2fa.service'
 
 // Thêm S3Service vào danh sách dùng chung
 const sharedServices = [
@@ -15,6 +16,7 @@ const sharedServices = [
   TokenService, 
   EmailService, 
   S3Service,
+  TwoFactorService
 ]
 
 const sharedProviders = [

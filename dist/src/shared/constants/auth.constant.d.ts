@@ -17,5 +17,6 @@ export type AppRoleType = (typeof AppRole)[keyof typeof AppRole];
 export declare const TypeOfVerificationCode: {
     readonly REGISTER: "REGISTER";
     readonly FORGOT_PASSWORD: "FORGOT_PASSWORD";
+    readonly DISABLE_2FA: "DISABLE_2FA";
 };
 export type TypeOfVerificationCodeType = (typeof TypeOfVerificationCode)[keyof typeof TypeOfVerificationCode];

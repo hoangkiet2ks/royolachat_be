@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AccountBlockedException = exports.AccountInactiveException = exports.GoogleUserInfoError = exports.UnauthorizedAccessException = exports.RefreshTokenAlreadyUsedException = exports.InvalidPasswordException = exports.EmailNotFoundException = exports.EmailAlreadyExistsException = exports.FailedToSendOTPException = exports.ExpiredOTPException = exports.InvalidOTPException = void 0;
+exports.AccountBlockedException = exports.AccountInactiveException = exports.GoogleUserInfoError = exports.UnauthorizedAccessException = exports.RefreshTokenAlreadyUsedException = exports.InvalidTOTPException = exports.TOTPNotEnabledException = exports.TOTPAlreadyEnabledException = exports.InvalidPasswordException = exports.EmailNotFoundException = exports.EmailAlreadyExistsException = exports.FailedToSendOTPException = exports.ExpiredOTPException = exports.InvalidOTPException = void 0;
 const common_1 = require("@nestjs/common");
 exports.InvalidOTPException = new common_1.UnprocessableEntityException([
     {
@@ -36,6 +36,24 @@ exports.InvalidPasswordException = new common_1.UnprocessableEntityException([
     {
         message: 'Error.InvalidPassword',
         path: 'password',
+    },
+]);
+exports.TOTPAlreadyEnabledException = new common_1.UnprocessableEntityException([
+    {
+        message: 'Error.TOTPAlreadyEnabled',
+        path: 'totpCode',
+    },
+]);
+exports.TOTPNotEnabledException = new common_1.UnprocessableEntityException([
+    {
+        message: 'Error.TOTPNotEnabled',
+        path: 'totpCode',
+    },
+]);
+exports.InvalidTOTPException = new common_1.UnprocessableEntityException([
+    {
+        message: 'Error.InvalidTOTP',
+        path: 'totpCode',
     },
 ]);
 exports.RefreshTokenAlreadyUsedException = new common_1.UnauthorizedException('Error.RefreshTokenAlreadyUsed');

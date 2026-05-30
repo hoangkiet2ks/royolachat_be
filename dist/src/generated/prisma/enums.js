@@ -15,7 +15,8 @@ exports.MessageType = {
     IMAGE: 'IMAGE',
     FILE: 'FILE',
     SYSTEM: 'SYSTEM',
-    CALL_LOG: 'CALL_LOG'
+    CALL_LOG: 'CALL_LOG',
+    POLL: 'POLL'
 };
 exports.FriendshipStatus = {
     PENDING: 'PENDING',
@@ -24,7 +25,8 @@ exports.FriendshipStatus = {
 };
 exports.VerificationCodeType = {
     REGISTER: 'REGISTER',
-    FORGOT_PASSWORD: 'FORGOT_PASSWORD'
+    FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+    DISABLE_2FA: 'DISABLE_2FA'
 };
 exports.UserStatus = {
     ACTIVE: 'ACTIVE',

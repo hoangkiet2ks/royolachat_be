@@ -18,5 +18,6 @@ exports.AppRole = {
 exports.TypeOfVerificationCode = {
     REGISTER: 'REGISTER',
     FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+    DISABLE_2FA: 'DISABLE_2FA',
 };
 //# sourceMappingURL=auth.constant.js.map

@@ -37,7 +37,7 @@ let ChatService = class ChatService {
         });
     }
     async updateLastSeen(userId) {
-        return this.prisma.user.update({
+        return this.prisma.user.updateMany({
             where: { id: userId },
             data: { lastSeenAt: new Date() }
         });
@@ -50,9 +50,37 @@ let ChatService = class ChatService {
                 content: data.content,
                 fileUrl: data.fileUrl,
                 type: data.type,
+                replyToId: data.replyToId,
+                ...(data.type === 'POLL' && data.pollData && {
+                    poll: {
+                        create: {
+                            title: data.pollData.title,
+                            options: {
+                                create: data.pollData.options.map((opt, index) => ({
+                                    text: opt,
+                                    order: index
+                                }))
+                            }
+                        }
+                    }
+                })
             },
             include: {
-                sender: { select: { id: true, name: true, avatar: true } }
+                sender: { select: { id: true, name: true, avatar: true } },
+                reactions: true,
+                replyTo: {
+                    select: { id: true, content: true, type: true, sender: { select: { name: true } } }
+                },
+                poll: {
+                    include: {
+                        options: {
+                            include: {
+                                votes: true
+                            },
+                            orderBy: { order: 'asc' }
+                        }
+                    }
+                }
             }
         });
     }
@@ -85,6 +113,19 @@ let ChatService = class ChatService {
             include: {
                 sender: { select: { id: true, name: true, avatar: true } },
                 reactions: true,
+                replyTo: {
+                    select: { id: true, content: true, type: true, sender: { select: { name: true } } }
+                },
+                poll: {
+                    include: {
+                        options: {
+                            include: {
+                                votes: true
+                            },
+                            orderBy: { order: 'asc' }
+                        }
+                    }
+                }
             }
         });
         return messages.reverse();
@@ -452,6 +493,53 @@ let ChatService = class ChatService {
             });
             return { action: 'added', messageId, userId, emoji: newReaction.emoji };
         }
+    }
+    async votePoll(userId, pollId, optionId) {
+        const existingVote = await this.prisma.pollVote.findUnique({
+            where: {
+                optionId_userId: { optionId, userId }
+            }
+        });
+        if (existingVote) {
+            await this.prisma.pollVote.delete({ where: { id: existingVote.id } });
+        }
+        else {
+            await this.prisma.pollVote.create({
+                data: { pollId, optionId, userId }
+            });
+        }
+        return this.prisma.poll.findUnique({
+            where: { id: pollId },
+            include: {
+                options: {
+                    include: { votes: true },
+                    orderBy: { order: 'asc' }
+                }
+            }
+        });
+    }
+    async addPollOption(userId, pollId, text) {
+        const maxOrderOption = await this.prisma.pollOption.findFirst({
+            where: { pollId },
+            orderBy: { order: 'desc' }
+        });
+        const nextOrder = maxOrderOption ? maxOrderOption.order + 1 : 0;
+        await this.prisma.pollOption.create({
+            data: {
+                pollId,
+                text,
+                order: nextOrder
+            }
+        });
+        return this.prisma.poll.findUnique({
+            where: { id: pollId },
+            include: {
+                options: {
+                    include: { votes: true },
+                    orderBy: { order: 'asc' }
+                }
+            }
+        });
     }
 };
 exports.ChatService = ChatService;

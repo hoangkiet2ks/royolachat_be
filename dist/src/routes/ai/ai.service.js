@@ -32,30 +32,21 @@ function extractMentionContent(text) {
 function filterMessagesForAI(messages) {
     return messages.filter((m) => m.type === 'TEXT' && m.isRecalled === false);
 }
-function parseSmartReplies(geminiResponse) {
+function parseSmartReplies(raw) {
     try {
-        const parsed = JSON.parse(geminiResponse);
-        if (Array.isArray(parsed)) {
-            return parsed
-                .slice(0, 3)
-                .map((s) => String(s).slice(0, 50))
-                .filter((s) => s.length > 0);
-        }
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed))
+            return parsed.slice(0, 3).map((s) => String(s).slice(0, 50)).filter((s) => s.length > 0);
     }
-    catch {
-    }
-    const lines = geminiResponse
+    catch { }
+    return raw
         .split('\n')
         .map((l) => l.replace(/^\d+[\.\)]\s*/, '').replace(/^[-*]\s*/, '').trim())
-        .filter((l) => l.length > 0 && l.length <= 50);
-    return lines.slice(0, 3);
+        .filter((l) => l.length > 0 && l.length <= 50)
+        .slice(0, 3);
 }
-function shouldShowSmartReply(message) {
-    return message.type === 'TEXT';
-}
-function shouldShowToneEditor(text) {
-    return text.length >= 5 && text.length <= 2000;
-}
+function shouldShowSmartReply(message) { return message.type === 'TEXT'; }
+function shouldShowToneEditor(text) { return text.length >= 5 && text.length <= 2000; }
 function hasSensitiveContent(text) {
     if (/\d{16}/.test(text.replace(/[\s-]/g, '')))
         return true;
@@ -63,7 +54,7 @@ function hasSensitiveContent(text) {
         return true;
     if (/password\s*[=:]/i.test(text))
         return true;
-    if (/mật\s*khẩu\s*[=:]/i.test(text))
+    if (/mat\s*khau\s*[=:]/i.test(text))
         return true;
     if (/passwd\s*[=:]/i.test(text))
         return true;
@@ -71,6 +62,30 @@ function hasSensitiveContent(text) {
         return true;
     return false;
 }
+const AGENT_TOOLS = [
+    {
+        type: 'function',
+        function: {
+            name: 'get_friend_list',
+            description: 'Sử dụng hàm này để lấy danh sách tên và số lượng bạn bè của người dùng hiện tại.',
+            parameters: { type: 'object', properties: {}, required: [] },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'open_chat_room',
+            description: 'CHỈ kích hoạt hàm này khi người dùng CÓ LỆNH RÕ RÀNG yêu cầu điều hướng giao diện (ví dụ: "mở đoạn chat với A", "chuyển sang phòng chat của B", "nhắn tin cho C"). TUYỆT ĐỐI KHÔNG gọi hàm này nếu người dùng chỉ đang hỏi bâng quơ, nhắc đến tên một người, hoặc hỏi đáp thông thường.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    target_name: { type: 'string', description: 'Ten nguoi ban muon mo cuoc tro chuyen. Vi du: "Nguyen Nhat Tan"' },
+                },
+                required: ['target_name'],
+            },
+        },
+    },
+];
 let AiService = class AiService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -78,22 +93,18 @@ let AiService = class AiService {
         this.userRateLimits = new Map();
         this.groupRateLimits = new Map();
         this.groq = null;
-        this.MODEL = 'llama-3.1-8b-instant';
+        this.MODEL = 'llama-3.3-70b-versatile';
         const apiKey = process.env.GROQ_API_KEY;
         if (apiKey) {
             this.groq = new groq_sdk_1.default({ apiKey });
             console.log('[AiService] Groq AI initialized');
         }
         else {
-            console.warn('[AiService] GROQ_API_KEY not set — AI features disabled');
+            console.warn('[AiService] GROQ_API_KEY not set - AI features disabled');
         }
     }
-    setBotUserId(id) {
-        this.botUserId = id;
-    }
-    getBotUserId() {
-        return this.botUserId;
-    }
+    setBotUserId(id) { this.botUserId = id; }
+    getBotUserId() { return this.botUserId; }
     async checkRateLimit(userId) {
         const now = Date.now();
         const ONE_HOUR = 60 * 60 * 1000;
@@ -132,9 +143,8 @@ let AiService = class AiService {
             totalChars += msg.content.length;
             result.unshift({ role: msg.role, parts: [{ text: msg.content }] });
         }
-        while (result.length > 0 && result[0].role !== 'user') {
+        while (result.length > 0 && result[0].role !== 'user')
             result.shift();
-        }
         return result;
     }
     async buildContext(conversationId, maxMessages, maxChars = 30000) {
@@ -151,65 +161,208 @@ let AiService = class AiService {
         }));
         return this.buildContextFromMessages(mapped, maxChars);
     }
-    logGeminiCall(userId, taskType, status, extra) {
-        const entry = {
-            timestamp: new Date().toISOString(),
-            userId,
-            taskType,
-            status,
-            ...extra,
-        };
-        if (status === 'fail') {
+    logCall(userId, taskType, status, extra) {
+        const entry = { timestamp: new Date().toISOString(), userId, taskType, status, ...extra };
+        if (status === 'fail')
             console.error('[AiService]', JSON.stringify(entry));
-        }
-        else {
+        else
             console.log('[AiService]', JSON.stringify(entry));
-        }
     }
     async processMessage(params) {
-        const { conversationId, content, userId, server, userSockets } = params;
+        const { conversationId, content, userId, userName, server, userSockets } = params;
         const userSocketIds = userSockets.get(userId) || [];
-        const emitToUser = (event, data) => {
-            userSocketIds.forEach((sid) => server.to(sid).emit(event, data));
-        };
+        const emitToUser = (event, data) => userSocketIds.forEach((sid) => server.to(sid).emit(event, data));
         try {
             if (!(await this.checkRateLimit(userId))) {
-                this.logGeminiCall(userId, 'chat_1v1', 'rate_limited');
-                const errMsg = await this.saveBotMessage(conversationId, 'Bạn đã đạt giới hạn sử dụng AI. Vui lòng thử lại sau 1 giờ.');
-                emitToUser('newMessage', errMsg);
+                this.logCall(userId, 'chat_1v1', 'rate_limited');
+                emitToUser('newMessage', await this.saveBotMessage(conversationId, 'Ban da dat gioi han su dung AI. Vui long thu lai sau 1 gio.'));
                 return;
             }
             if (hasSensitiveContent(content)) {
-                this.logGeminiCall(userId, 'chat_1v1', 'sensitive_content');
-                const errMsg = await this.saveBotMessage(conversationId, 'Nội dung có thể chứa thông tin nhạy cảm. Vui lòng kiểm tra lại trước khi gửi cho AI.');
-                emitToUser('newMessage', errMsg);
+                this.logCall(userId, 'chat_1v1', 'sensitive_content');
+                emitToUser('newMessage', await this.saveBotMessage(conversationId, 'Noi dung co the chua thong tin nhay cam. Vui long kiem tra lai.'));
                 return;
             }
             await this.recordRequest(userId);
-            this.logGeminiCall(userId, 'chat_1v1', 'start', { conversationId });
+            this.logCall(userId, 'chat_1v1', 'start', { conversationId });
             const context = await this.buildContext(conversationId, 10, 30000);
-            let responseText;
-            try {
-                responseText = await this.callGemini(context, content, 30000);
-            }
-            catch (err) {
-                if (err.message === 'TIMEOUT' || err.status >= 500) {
-                    await new Promise((r) => setTimeout(r, 2000));
-                    responseText = await this.callGemini(context, content, 30000);
+            const now = new Date();
+            const systemPrompt = [
+                `Bạn là Royola Bot, trợ lý AI thông minh của ứng dụng chat Royola.`,
+                `Thông tin người dùng đang chat với bạn:`,
+                `  - Tên: ${userName}`,
+                `  - User ID: ${userId}`,
+                `Thời gian hệ thống hiện tại: ${now.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })} (GMT+7).`,
+                ``,
+                `QUY TẮC NGÔN NGỮ TỐI THƯỢNG: BẠN BẮT BUỘC PHẢI LUÔN LUÔN trả lời bằng tiếng Việt có dấu chuẩn xác, định dạng rõ ràng, tự nhiên.`,
+                ``,
+                `Quy tắc Gọi Hàm (Strict Rules):`,
+                `CHỈ gọi hàm khi người dùng yêu cầu hành động cụ thể (ví dụ: "mở chat với X", "tạo nhóm", "tôi có bao nhiêu bạn bè").`,
+                `NẾU người dùng hỏi các câu hỏi hướng dẫn sử dụng (FAQ), TUYỆT ĐỐI KHÔNG kích hoạt tool. Hãy trả lời dựa trên Cẩm nang sau:`,
+                ``,
+                `CẨM NANG HƯỚNG DẪN (Không gọi tool khi hỏi các câu này):`,
+                `  - Để kết bạn: Bấm vào biểu tượng Kết bạn ở thanh Sidebar bên trái -> Nhập số điện thoại để tìm -> Gửi yêu cầu kết bạn.`,
+                `  - Để tạo nhóm chat: Bấm vào biểu tượng Tạo nhóm là dấu + ở trong mục chat -> Chọn danh sách bạn bè bạn muốn thêm vào nhóm -> Đặt tên nhóm -> Khởi tạo nhóm. Lưu ý rằng, tạo nhóm cần phải kết bạn từ trước và phải có ít nhất 3 thành viên mới có thể tạo nhóm được.`,
+                ``,
+                `QUAN TRỌNG: Tuyệt đối KHÔNG tự viết XML tags, function tags hay <function=...> trong câu trả lời.`,
+                `Nếu đã gọi tool và nhận được kết quả, hãy trả lời bằng ngôn ngữ tự nhiên dựa trên kết quả đó.`,
+            ].join('\n');
+            if (!this.groq)
+                throw new Error('Groq API not configured');
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...context.map((m) => ({
+                    role: (m.role === 'model' ? 'assistant' : 'user'),
+                    content: m.parts[0].text,
+                })),
+                { role: 'user', content },
+            ];
+            const firstRes = await Promise.race([
+                this.groq.chat.completions.create({ model: this.MODEL, messages, tools: AGENT_TOOLS, tool_choice: 'auto', max_tokens: 1024 }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 30000)),
+            ]);
+            const firstChoice = firstRes.choices[0];
+            if (firstChoice.finish_reason === 'tool_calls' && firstChoice.message.tool_calls) {
+                messages.push(firstChoice.message);
+                for (const toolCall of firstChoice.message.tool_calls) {
+                    const toolName = toolCall.function.name;
+                    let toolResult;
+                    console.log(`[AiService] Tool call: ${toolName}`, toolCall.function.arguments);
+                    if (toolName === 'get_friend_list') {
+                        try {
+                            const friendships = await this.prisma.friendship.findMany({
+                                where: { OR: [{ requesterId: userId, status: 'ACCEPTED' }, { receiverId: userId, status: 'ACCEPTED' }] },
+                                include: { requester: { select: { id: true, name: true } }, receiver: { select: { id: true, name: true } } },
+                            });
+                            const friends = friendships.map((f) => f.requesterId === userId
+                                ? { id: f.receiverId, name: f.receiver.name }
+                                : { id: f.requesterId, name: f.requester.name });
+                            toolResult = JSON.stringify({ friend_count: friends.length, friends });
+                        }
+                        catch (e) {
+                            toolResult = JSON.stringify({ error: 'Không tìm thấy dữ liệu phù hợp trong hệ thống' });
+                        }
+                    }
+                    else if (toolName === 'open_chat_room') {
+                        try {
+                            let args = {};
+                            try {
+                                args = JSON.parse(toolCall.function.arguments);
+                            }
+                            catch { }
+                            const targetName = args.target_name || '';
+                            const friendship = await this.prisma.friendship.findFirst({
+                                where: {
+                                    status: 'ACCEPTED',
+                                    OR: [
+                                        { requesterId: userId, receiver: { name: { contains: targetName, mode: 'insensitive' } } },
+                                        { receiverId: userId, requester: { name: { contains: targetName, mode: 'insensitive' } } },
+                                    ],
+                                },
+                                include: { requester: { select: { id: true, name: true } }, receiver: { select: { id: true, name: true } } },
+                            });
+                            if (!friendship) {
+                                toolResult = JSON.stringify({ error: `Không tìm thấy dữ liệu phù hợp trong hệ thống: không có bạn bè tên "${targetName}"` });
+                            }
+                            else {
+                                const friendId = friendship.requesterId === userId ? friendship.receiverId : friendship.requesterId;
+                                const friendName = friendship.requesterId === userId ? friendship.receiver.name : friendship.requester.name;
+                                const conv = await this.prisma.conversation.findFirst({
+                                    where: { isGroup: false, AND: [{ members: { some: { userId } } }, { members: { some: { userId: friendId } } }] },
+                                });
+                                if (conv) {
+                                    emitToUser('AI_CLIENT_ACTION', { action: 'OPEN_CHAT', conversationId: conv.id, targetName: friendName });
+                                    toolResult = JSON.stringify({ success: true, message: `Da mo giao dien chat voi ${friendName}` });
+                                }
+                                else {
+                                    toolResult = JSON.stringify({ error: 'Không tìm thấy dữ liệu phù hợp trong hệ thống: chưa có cuộc trò chuyện nào' });
+                                }
+                            }
+                        }
+                        catch (e) {
+                            toolResult = JSON.stringify({ error: 'Không tìm thấy dữ liệu phù hợp trong hệ thống' });
+                        }
+                    }
+                    else if (toolName === 'create_group_chat') {
+                        let args = {};
+                        try {
+                            args = JSON.parse(toolCall.function.arguments);
+                        }
+                        catch { }
+                        const groupName = args.group_name || 'Nhom moi';
+                        const memberNames = args.member_names || [];
+                        if (memberNames.length === 0) {
+                            toolResult = JSON.stringify({ success: false, message: 'Vui long cung cap ten it nhat 1 thanh vien de tao nhom.' });
+                        }
+                        else {
+                            const friendships = await this.prisma.friendship.findMany({
+                                where: { status: 'ACCEPTED', OR: [{ requesterId: userId }, { receiverId: userId }] },
+                                include: { requester: { select: { id: true, name: true } }, receiver: { select: { id: true, name: true } } },
+                            });
+                            const foundIds = [];
+                            const notFound = [];
+                            for (const name of memberNames) {
+                                const match = friendships.find((f) => {
+                                    const friend = f.requesterId === userId ? f.receiver : f.requester;
+                                    return friend.name.toLowerCase().includes(name.toLowerCase());
+                                });
+                                if (match) {
+                                    foundIds.push(match.requesterId === userId ? match.receiverId : match.requesterId);
+                                }
+                                else {
+                                    notFound.push(name);
+                                }
+                            }
+                            if (notFound.length > 0) {
+                                toolResult = JSON.stringify({ success: false, message: `Khong tim thay ban be: ${notFound.join(', ')}. Vui long kiem tra lai ten.` });
+                            }
+                            else if (foundIds.length < 2) {
+                                toolResult = JSON.stringify({ success: false, message: 'Nhom chat can it nhat 3 nguoi (bao gom ban). Vui long them it nhat 2 nguoi ban.' });
+                            }
+                            else {
+                                const allIds = [userId, ...foundIds];
+                                const newGroup = await this.prisma.conversation.create({
+                                    data: {
+                                        isGroup: true,
+                                        name: groupName,
+                                        members: {
+                                            create: allIds.map((id) => ({
+                                                user: { connect: { id } },
+                                                role: id === userId ? 'ADMIN' : 'MEMBER',
+                                            })),
+                                        },
+                                    },
+                                    include: { members: { include: { user: { select: { id: true, name: true } } } } },
+                                });
+                                emitToUser('AI_CLIENT_ACTION', { action: 'OPEN_CHAT', conversationId: newGroup.id, targetName: groupName });
+                                const nameList = newGroup.members.map((m) => m.user.name).join(', ');
+                                toolResult = JSON.stringify({ success: true, conversationId: newGroup.id, message: `Da tao nhom "${groupName}" thanh cong voi ${newGroup.members.length} thanh vien: ${nameList}` });
+                            }
+                        }
+                    }
+                    else {
+                        toolResult = JSON.stringify({ error: `Tool "${toolName}" khong duoc ho tro` });
+                    }
+                    messages.push({ role: 'tool', tool_call_id: toolCall.id, content: toolResult });
                 }
-                else {
-                    throw err;
-                }
+                const secondRes = await Promise.race([
+                    this.groq.chat.completions.create({ model: this.MODEL, messages, max_tokens: 1024 }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 30000)),
+                ]);
+                const finalText = this.sanitizeResponse(secondRes.choices[0]?.message?.content || 'Da thuc hien xong.');
+                this.logCall(userId, 'chat_1v1', 'success', { conversationId });
+                emitToUser('newMessage', await this.saveBotMessage(conversationId, finalText));
             }
-            const botMsg = await this.saveBotMessage(conversationId, responseText);
-            this.logGeminiCall(userId, 'chat_1v1', 'success', { conversationId });
-            emitToUser('newMessage', botMsg);
+            else {
+                const responseText = this.sanitizeResponse(firstChoice.message?.content || '');
+                this.logCall(userId, 'chat_1v1', 'success', { conversationId });
+                emitToUser('newMessage', await this.saveBotMessage(conversationId, responseText));
+            }
         }
         catch (err) {
-            this.logGeminiCall(userId, 'chat_1v1', 'fail', { conversationId });
+            this.logCall(userId, 'chat_1v1', 'fail', { conversationId });
             console.error('[AiService] processMessage exception:', err.message);
-            const errMsg = await this.saveBotMessage(conversationId, 'Royola Bot hiện không khả dụng, vui lòng thử lại sau.');
-            emitToUser('newMessage', errMsg);
+            emitToUser('newMessage', await this.saveBotMessage(conversationId, 'Royola Bot hien khong kha dung, vui long thu lai sau.'));
         }
         finally {
             emitToUser('botTypingStop', { conversationId });
@@ -220,70 +373,53 @@ let AiService = class AiService {
         const roomName = `conversation_${conversationId}`;
         try {
             if (!(await this.checkRateLimit(userId))) {
-                this.logGeminiCall(userId, 'group_mention', 'rate_limited', { conversationId });
-                const errMsg = await this.saveBotMessage(conversationId, 'Bạn đã đạt giới hạn sử dụng AI. Vui lòng thử lại sau 1 giờ.');
-                server.to(roomName).emit('newMessage', errMsg);
+                this.logCall(userId, 'group_mention', 'rate_limited', { conversationId });
+                server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, 'Ban da dat gioi han su dung AI. Vui long thu lai sau 1 gio.'));
                 return;
             }
             await this.recordRequest(userId);
             const intent = this.detectIntent(question);
-            this.logGeminiCall(userId, 'group_mention', 'start', { conversationId, intent });
+            this.logCall(userId, 'group_mention', 'start', { conversationId, intent });
             let responseText;
             if (intent === 'summarize') {
                 const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-                const messages = await this.prisma.message.findMany({
-                    where: {
-                        conversationId,
-                        type: 'TEXT',
-                        isRecalled: false,
-                        createdAt: { gte: since },
-                    },
-                    orderBy: { createdAt: 'asc' },
-                    take: 100,
+                const msgs = await this.prisma.message.findMany({
+                    where: { conversationId, type: 'TEXT', isRecalled: false, createdAt: { gte: since } },
+                    orderBy: { createdAt: 'asc' }, take: 100,
                     include: { sender: { select: { name: true } } },
                 });
-                if (messages.length === 0) {
-                    responseText = 'Không có nội dung nào để tóm tắt trong 24 giờ qua.';
+                if (msgs.length === 0) {
+                    responseText = 'Khong co noi dung nao de tom tat trong 24 gio qua.';
                 }
                 else {
-                    const chatText = messages
-                        .map((m) => `${m.sender.name}: ${m.content}`)
-                        .join('\n')
-                        .slice(0, 30000);
-                    responseText = await this.callGeminiRaw(`Tóm tắt ngắn gọn nội dung cuộc trò chuyện sau bằng tiếng Việt:\n\n${chatText}`, 30000);
+                    const chatText = msgs.map((m) => `${m.sender.name}: ${m.content}`).join('\n').slice(0, 30000);
+                    responseText = await this.callGeminiRaw(`Tom tat ngan gon noi dung cuoc tro chuyen sau bang tieng Viet:\n\n${chatText}`, 30000);
                 }
             }
             else if (intent === 'task') {
-                const messages = await this.prisma.message.findMany({
+                const msgs = await this.prisma.message.findMany({
                     where: { conversationId, type: 'TEXT', isRecalled: false },
-                    orderBy: { createdAt: 'desc' },
-                    take: 200,
+                    orderBy: { createdAt: 'desc' }, take: 200,
                     include: { sender: { select: { name: true } } },
                 });
-                if (messages.length === 0) {
-                    responseText = 'Không tìm thấy câu giao việc nào trong lịch sử trò chuyện.';
+                if (msgs.length === 0) {
+                    responseText = 'Khong tim thay cau giao viec nao trong lich su tro chuyen.';
                 }
                 else {
-                    const chatText = messages
-                        .reverse()
-                        .map((m) => `${m.sender.name}: ${m.content}`)
-                        .join('\n')
-                        .slice(0, 30000);
-                    responseText = await this.callGeminiRaw(`Từ đoạn hội thoại sau, hãy trích xuất tất cả các câu giao việc, người được giao và deadline (nếu có). Trả về dạng danh sách rõ ràng bằng tiếng Việt:\n\n${chatText}`, 30000);
+                    const chatText = msgs.reverse().map((m) => `${m.sender.name}: ${m.content}`).join('\n').slice(0, 30000);
+                    responseText = await this.callGeminiRaw(`Tu doan hoi thoai sau, hay trich xuat tat ca cac cau giao viec, nguoi duoc giao va deadline (neu co). Tra ve dang danh sach ro rang bang tieng Viet:\n\n${chatText}`, 30000);
                 }
             }
             else {
                 responseText = await this.callGeminiRaw(question, 30000);
             }
-            const botMsg = await this.saveBotMessage(conversationId, responseText);
-            this.logGeminiCall(userId, 'group_mention', 'success', { conversationId });
-            server.to(roomName).emit('newMessage', botMsg);
+            this.logCall(userId, 'group_mention', 'success', { conversationId });
+            server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, responseText));
         }
         catch (err) {
-            this.logGeminiCall(userId, 'group_mention', 'fail', { conversationId });
+            this.logCall(userId, 'group_mention', 'fail', { conversationId });
             console.error('[AiService] processGroupMention exception:', err.message);
-            const errMsg = await this.saveBotMessage(conversationId, 'Royola Bot hiện không khả dụng, vui lòng thử lại sau.');
-            server.to(roomName).emit('newMessage', errMsg);
+            server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, 'Royola Bot hien khong kha dung, vui long thu lai sau.'));
         }
         finally {
             server.to(roomName).emit('botTypingStop', { conversationId });
@@ -292,68 +428,58 @@ let AiService = class AiService {
     async getSmartReplies(params) {
         const { messageContent, userId } = params;
         if (!(await this.checkRateLimit(userId))) {
-            this.logGeminiCall(userId, 'smart_reply', 'rate_limited');
+            this.logCall(userId, 'smart_reply', 'rate_limited');
             throw new Error('RATE_LIMIT_EXCEEDED');
         }
         await this.recordRequest(userId);
-        this.logGeminiCall(userId, 'smart_reply', 'start');
+        this.logCall(userId, 'smart_reply', 'start');
         try {
-            const prompt = `Dựa vào tin nhắn sau, hãy gợi ý 3 câu trả lời ngắn gọn (mỗi câu tối đa 50 ký tự) bằng cùng ngôn ngữ với tin nhắn. Trả về JSON array: ["gợi ý 1", "gợi ý 2", "gợi ý 3"]\n\nTin nhắn: "${messageContent}"`;
+            const prompt = `Dua vao tin nhan sau, hay goi y 3 cau tra loi ngan gon (moi cau toi da 50 ky tu) bang cung ngon ngu voi tin nhan. Tra ve JSON array: ["goi y 1", "goi y 2", "goi y 3"]\n\nTin nhan: "${messageContent}"`;
             const response = await this.callGeminiRaw(prompt, 5000);
             const replies = parseSmartReplies(response);
-            this.logGeminiCall(userId, 'smart_reply', 'success');
+            this.logCall(userId, 'smart_reply', 'success');
             return replies;
         }
         catch (err) {
-            this.logGeminiCall(userId, 'smart_reply', 'fail');
+            this.logCall(userId, 'smart_reply', 'fail');
             throw err;
         }
     }
     async editTone(params) {
         const { text, mode, userId } = params;
         if (!(await this.checkRateLimit(userId))) {
-            this.logGeminiCall(userId, 'tone_edit', 'rate_limited');
+            this.logCall(userId, 'tone_edit', 'rate_limited');
             throw new Error('RATE_LIMIT_EXCEEDED');
         }
         await this.recordRequest(userId);
-        this.logGeminiCall(userId, 'tone_edit', 'start', { mode });
+        this.logCall(userId, 'tone_edit', 'start', { mode });
         try {
             const prompt = mode === 'polite'
-                ? `Viết lại đoạn văn sau theo giọng điệu lịch sự hơn, giữ nguyên ý nghĩa. Chỉ trả về đoạn văn đã viết lại, không giải thích:\n\n${text}`
-                : `Sửa lỗi ngữ pháp và chính tả trong đoạn văn sau. Chỉ trả về đoạn văn đã sửa, không giải thích:\n\n${text}`;
+                ? `Viet lai doan van sau theo giong dieu lich su hon, giu nguyen y nghia. Chi tra ve doan van da viet lai, khong giai thich:\n\n${text}`
+                : `Sua loi ngu phap va chinh ta trong doan van sau. Chi tra ve doan van da sua, khong giai thich:\n\n${text}`;
             const result = await this.callGeminiRaw(prompt, 10000);
-            this.logGeminiCall(userId, 'tone_edit', 'success', { mode });
+            this.logCall(userId, 'tone_edit', 'success', { mode });
             return result;
         }
         catch (err) {
-            this.logGeminiCall(userId, 'tone_edit', 'fail', { mode });
+            this.logCall(userId, 'tone_edit', 'fail', { mode });
             throw err;
         }
     }
     detectIntent(question) {
         const lower = question.toLowerCase();
-        if (/tóm tắt|summarize|tóm lược|tổng hợp/.test(lower))
+        if (/tom tat|summarize|tom luoc|tong hop/.test(lower))
             return 'summarize';
-        if (/\btask\b|công việc|giao việc|danh sách việc|todo/.test(lower))
+        if (/\btask\b|cong viec|giao viec|danh sach viec|todo/.test(lower))
             return 'task';
         return 'qa';
     }
-    async callGemini(context, newMessage, timeoutMs) {
-        if (!this.groq)
-            throw new Error('Groq API not configured');
-        const messages = [
-            { role: 'system', content: 'Bạn là Royola Bot, một trợ lý AI thông minh và thân thiện. Hãy trả lời bằng ngôn ngữ của người dùng.' },
-            ...context.map(m => ({
-                role: (m.role === 'model' ? 'assistant' : 'user'),
-                content: m.parts[0].text,
-            })),
-            { role: 'user', content: newMessage },
-        ];
-        const result = await Promise.race([
-            this.groq.chat.completions.create({ model: this.MODEL, messages, max_tokens: 1024 }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), timeoutMs)),
-        ]);
-        return result.choices[0]?.message?.content || '';
+    sanitizeResponse(text) {
+        let cleaned = text.replace(/<function=[^>]*>[\s\S]*?<\/function>/gi, '');
+        cleaned = cleaned.replace(/<function=[^>]*\/>/gi, '');
+        cleaned = cleaned.replace(/\{"name"\s*:\s*"[^"]+"\s*,\s*"parameters"[\s\S]*?\}/g, '');
+        cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
+        return cleaned || 'Da thuc hien xong.';
     }
     async callGeminiRaw(prompt, timeoutMs) {
         if (!this.groq)
@@ -362,7 +488,7 @@ let AiService = class AiService {
             this.groq.chat.completions.create({
                 model: this.MODEL,
                 messages: [
-                    { role: 'system', content: 'Bạn là Royola Bot, một trợ lý AI thông minh và thân thiện.' },
+                    { role: 'system', content: 'Ban la Royola Bot, mot tro ly AI thong minh va than thien.' },
                     { role: 'user', content: prompt },
                 ],
                 max_tokens: 1024,
@@ -373,12 +499,7 @@ let AiService = class AiService {
     }
     async saveBotMessage(conversationId, content) {
         return this.prisma.message.create({
-            data: {
-                senderId: this.botUserId,
-                conversationId,
-                content,
-                type: 'TEXT',
-            },
+            data: { senderId: this.botUserId, conversationId, content, type: 'TEXT' },
             include: { sender: { select: { id: true, name: true, avatar: true } } },
         });
     }

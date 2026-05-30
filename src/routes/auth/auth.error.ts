@@ -41,6 +41,25 @@ export const InvalidPasswordException = new UnprocessableEntityException([
     path: 'password',
   },
 ])
+export const TOTPAlreadyEnabledException = new UnprocessableEntityException([
+  {
+    message: 'Error.TOTPAlreadyEnabled',
+    path: 'totpCode',
+  },
+])
+export const TOTPNotEnabledException = new UnprocessableEntityException([
+  {
+    message: 'Error.TOTPNotEnabled',
+    path: 'totpCode',
+  },
+])
+export const InvalidTOTPException = new UnprocessableEntityException([
+  {
+    message: 'Error.InvalidTOTP',
+    path: 'totpCode',
+  },
+])
+
 
 export const RefreshTokenAlreadyUsedException = new UnauthorizedException('Error.RefreshTokenAlreadyUsed')
 export const UnauthorizedAccessException = new UnauthorizedException('Error.UnauthorizedAccess')

@@ -27,6 +27,7 @@ const response_dto_1 = require("../../shared/dtos/response.dto");
 const auth_service_1 = require("./auth.service");
 const google_service_1 = require("./google.service");
 const auth_dto_1 = require("./auth.dto");
+const request_dto_1 = require("../../shared/dtos/request.dto");
 let AuthController = class AuthController {
     constructor(authService, googleService) {
         this.authService = authService;
@@ -62,6 +63,15 @@ let AuthController = class AuthController {
             const message = error instanceof Error ? error.message : 'Lỗi Google Callback';
             return res.redirect(`${config_1.default.GOOGLE_CLIENT_REDIRECT_URI}?error=${encodeURIComponent(message)}`);
         }
+    }
+    setupTwoFactorAuth(_, userId) {
+        return this.authService.setupTwoFactorAuth(userId);
+    }
+    disableTwoFactorAuth(body, userId) {
+        return this.authService.disableTwoFactorAuth({
+            ...body,
+            userId,
+        });
     }
     updateAvatar(userId, file) {
         return this.authService.updateAvatar(userId, file);
@@ -168,6 +178,24 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleCallback", null);
+__decorate([
+    (0, common_1.Post)('2fa/setup'),
+    (0, nestjs_zod_1.ZodSerializerDto)(auth_dto_1.TwoFactorSetupResDTO),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, active_user_decorator_1.ActiveUser)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [request_dto_1.EmptyBodyDTO, Number]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "setupTwoFactorAuth", null);
+__decorate([
+    (0, common_1.Post)('2fa/disable'),
+    (0, nestjs_zod_1.ZodSerializerDto)(response_dto_1.MessageResDTO),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, active_user_decorator_1.ActiveUser)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.DisableTwoFactorBodyDTO, Number]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "disableTwoFactorAuth", null);
 __decorate([
     (0, common_1.Patch)('me/avatar'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),

@@ -88,6 +88,21 @@ export type GroupJoinRequest = Prisma.GroupJoinRequestModel
  */
 export type MessageReaction = Prisma.MessageReactionModel
 /**
+ * Model Poll
+ * 
+ */
+export type Poll = Prisma.PollModel
+/**
+ * Model PollOption
+ * 
+ */
+export type PollOption = Prisma.PollOptionModel
+/**
+ * Model PollVote
+ * 
+ */
+export type PollVote = Prisma.PollVoteModel
+/**
  * Model BotModerator
  * 
  */

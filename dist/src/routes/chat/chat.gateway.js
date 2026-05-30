@@ -37,10 +37,10 @@ let ChatGateway = class ChatGateway {
                 return;
             }
             const payload = this.jwtService.decode(token);
-            console.log('[Socket] Payload decode:', payload ? `userId=${payload.userId}` : 'NULL');
+            const userId = Number(payload?.sub || payload?.userId || payload?.id);
+            console.log('[Socket] Payload decode userId:', userId);
             if (!payload)
                 throw new Error('Token không hợp lệ');
-            const userId = payload.userId;
             if (!userId)
                 throw new Error('Không tìm thấy userId trong token');
             client.data.userId = userId;
@@ -79,8 +79,8 @@ let ChatGateway = class ChatGateway {
     }
     async handleMessage(client, payload) {
         try {
-            const userId = client.data.userId;
-            if (!userId)
+            const userId = Number(client.data.userId);
+            if (!userId || isNaN(userId))
                 throw new Error('Chưa xác thực');
             const savedMessage = await this.chatService.saveMessage({
                 senderId: userId,
@@ -88,6 +88,8 @@ let ChatGateway = class ChatGateway {
                 content: payload.content,
                 fileUrl: payload.fileUrl,
                 type: payload.type || 'TEXT',
+                replyToId: payload.replyToId,
+                pollData: payload.pollData
             });
             const conversationInfo = await this.chatService.getConversationInfo(payload.conversationId, userId);
             if (conversationInfo && conversationInfo.members) {
@@ -111,11 +113,14 @@ let ChatGateway = class ChatGateway {
                 if (!conversationInfo?.isGroup && conversationInfo?.partnerIsBot) {
                     const userSocketIds = this.userSockets.get(userId) || [];
                     userSocketIds.forEach(sid => this.server.to(sid).emit('botTyping', { conversationId: payload.conversationId }));
+                    const senderUser = await this.chatService.getUserById(userId);
+                    const userName = senderUser?.name || `User ${userId}`;
                     setImmediate(() => {
                         this.aiService.processMessage({
                             conversationId: payload.conversationId,
                             content,
                             userId,
+                            userName,
                             server: this.server,
                             userSockets: this.userSockets,
                         }).catch(err => console.error('[Gateway] processMessage error:', err));
@@ -390,6 +395,47 @@ let ChatGateway = class ChatGateway {
             console.error('Lỗi thả reaction:', error.message);
         }
     }
+    handleTyping(client, payload) {
+        const userId = client.data.userId;
+        if (!userId)
+            return;
+        client.to(`conversation_${payload.conversationId}`).emit('userTyping', {
+            userId,
+            userName: payload.userName,
+        });
+    }
+    handleStopTyping(client, payload) {
+        const userId = client.data.userId;
+        if (!userId)
+            return;
+        client.to(`conversation_${payload.conversationId}`).emit('userStoppedTyping', {
+            userId,
+        });
+    }
+    async handleVotePoll(client, payload) {
+        try {
+            const userId = client.data.userId;
+            if (!userId)
+                throw new Error('Chưa xác thực');
+            const updatedPoll = await this.chatService.votePoll(userId, payload.pollId, payload.optionId);
+            this.server.to(`conversation_${payload.conversationId}`).emit('pollUpdated', updatedPoll);
+        }
+        catch (error) {
+            console.error('Lỗi khi vote poll:', error);
+        }
+    }
+    async handleAddPollOption(client, payload) {
+        try {
+            const userId = client.data.userId;
+            if (!userId)
+                throw new Error('Chưa xác thực');
+            const updatedPoll = await this.chatService.addPollOption(userId, payload.pollId, payload.text);
+            this.server.to(`conversation_${payload.conversationId}`).emit('pollUpdated', updatedPoll);
+        }
+        catch (error) {
+            console.error('Lỗi khi thêm lựa chọn poll:', error);
+        }
+    }
 };
 exports.ChatGateway = ChatGateway;
 __decorate([
@@ -508,6 +554,38 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "handleToggleReaction", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('typing'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", void 0)
+], ChatGateway.prototype, "handleTyping", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('stopTyping'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", void 0)
+], ChatGateway.prototype, "handleStopTyping", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('votePoll'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "handleVotePoll", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('addPollOption'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "handleAddPollOption", null);
 exports.ChatGateway = ChatGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {

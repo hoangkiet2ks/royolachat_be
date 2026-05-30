@@ -2,7 +2,7 @@ import { PrismaService } from '../../shared/services/prisma.service';
 export declare function isBotMention(text: string): boolean;
 export declare function extractMentionContent(text: string): string;
 export declare function filterMessagesForAI(messages: any[]): any[];
-export declare function parseSmartReplies(geminiResponse: string): string[];
+export declare function parseSmartReplies(raw: string): string[];
 export declare function shouldShowSmartReply(message: {
     type: string;
 }): boolean;
@@ -13,6 +13,10 @@ export interface ContextMessage {
     parts: [{
         text: string;
     }];
+}
+export interface UserContext {
+    userId: number;
+    userName: string;
 }
 export declare class AiService {
     private readonly prisma;
@@ -33,11 +37,12 @@ export declare class AiService {
         content: string;
     }>, maxChars: number): ContextMessage[];
     buildContext(conversationId: number, maxMessages: number, maxChars?: number): Promise<ContextMessage[]>;
-    private logGeminiCall;
+    private logCall;
     processMessage(params: {
         conversationId: number;
         content: string;
         userId: number;
+        userName: string;
         server: any;
         userSockets: Map<number, string[]>;
     }): Promise<void>;
@@ -57,7 +62,7 @@ export declare class AiService {
         userId: number;
     }): Promise<string>;
     private detectIntent;
-    private callGemini;
+    private sanitizeResponse;
     private callGeminiRaw;
     private saveBotMessage;
 }

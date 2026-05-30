@@ -191,6 +191,7 @@ export type MessageWhereInput = {
     conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>;
     readByMembers?: Prisma.ConversationMemberListRelationFilter;
     reactions?: Prisma.MessageReactionListRelationFilter;
+    poll?: Prisma.XOR<Prisma.PollNullableScalarRelationFilter, Prisma.PollWhereInput> | null;
 };
 export type MessageOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -211,6 +212,7 @@ export type MessageOrderByWithRelationInput = {
     conversation?: Prisma.ConversationOrderByWithRelationInput;
     readByMembers?: Prisma.ConversationMemberOrderByRelationAggregateInput;
     reactions?: Prisma.MessageReactionOrderByRelationAggregateInput;
+    poll?: Prisma.PollOrderByWithRelationInput;
 };
 export type MessageWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
@@ -234,6 +236,7 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
     conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>;
     readByMembers?: Prisma.ConversationMemberListRelationFilter;
     reactions?: Prisma.MessageReactionListRelationFilter;
+    poll?: Prisma.XOR<Prisma.PollNullableScalarRelationFilter, Prisma.PollWhereInput> | null;
 }, "id">;
 export type MessageOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -286,6 +289,7 @@ export type MessageCreateInput = {
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateInput = {
     id?: number;
@@ -303,6 +307,7 @@ export type MessageUncheckedCreateInput = {
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageUpdateInput = {
     content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -319,6 +324,7 @@ export type MessageUpdateInput = {
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -336,6 +342,7 @@ export type MessageUncheckedUpdateInput = {
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageCreateManyInput = {
     id?: number;
@@ -616,6 +623,18 @@ export type MessageUpdateOneRequiredWithoutReactionsNestedInput = {
     connect?: Prisma.MessageWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutReactionsInput, Prisma.MessageUpdateWithoutReactionsInput>, Prisma.MessageUncheckedUpdateWithoutReactionsInput>;
 };
+export type MessageCreateNestedOneWithoutPollInput = {
+    create?: Prisma.XOR<Prisma.MessageCreateWithoutPollInput, Prisma.MessageUncheckedCreateWithoutPollInput>;
+    connectOrCreate?: Prisma.MessageCreateOrConnectWithoutPollInput;
+    connect?: Prisma.MessageWhereUniqueInput;
+};
+export type MessageUpdateOneRequiredWithoutPollNestedInput = {
+    create?: Prisma.XOR<Prisma.MessageCreateWithoutPollInput, Prisma.MessageUncheckedCreateWithoutPollInput>;
+    connectOrCreate?: Prisma.MessageCreateOrConnectWithoutPollInput;
+    upsert?: Prisma.MessageUpsertWithoutPollInput;
+    connect?: Prisma.MessageWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutPollInput, Prisma.MessageUpdateWithoutPollInput>, Prisma.MessageUncheckedUpdateWithoutPollInput>;
+};
 export type MessageCreateWithoutSenderInput = {
     content?: string | null;
     fileUrl?: string | null;
@@ -630,6 +649,7 @@ export type MessageCreateWithoutSenderInput = {
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutSenderInput = {
     id?: number;
@@ -646,6 +666,7 @@ export type MessageUncheckedCreateWithoutSenderInput = {
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutSenderInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -699,6 +720,7 @@ export type MessageCreateWithoutConversationInput = {
     sender: Prisma.UserCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutConversationInput = {
     id?: number;
@@ -715,6 +737,7 @@ export type MessageUncheckedCreateWithoutConversationInput = {
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutConversationInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -751,6 +774,7 @@ export type MessageCreateWithoutReadByMembersInput = {
     sender: Prisma.UserCreateNestedOneWithoutMessagesInput;
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutReadByMembersInput = {
     id?: number;
@@ -767,6 +791,7 @@ export type MessageUncheckedCreateWithoutReadByMembersInput = {
     isPinned?: boolean;
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutReadByMembersInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -795,6 +820,7 @@ export type MessageUpdateWithoutReadByMembersInput = {
     sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput;
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutReadByMembersInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -811,6 +837,7 @@ export type MessageUncheckedUpdateWithoutReadByMembersInput = {
     isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageCreateWithoutRepliesInput = {
     content?: string | null;
@@ -826,6 +853,7 @@ export type MessageCreateWithoutRepliesInput = {
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutRepliesInput = {
     id?: number;
@@ -842,6 +870,7 @@ export type MessageUncheckedCreateWithoutRepliesInput = {
     isPinned?: boolean;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutRepliesInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -861,6 +890,7 @@ export type MessageCreateWithoutReplyToInput = {
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutReplyToInput = {
     id?: number;
@@ -877,6 +907,7 @@ export type MessageUncheckedCreateWithoutReplyToInput = {
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
     reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutReplyToInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -909,6 +940,7 @@ export type MessageUpdateWithoutRepliesInput = {
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutRepliesInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -925,6 +957,7 @@ export type MessageUncheckedUpdateWithoutRepliesInput = {
     isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUpsertWithWhereUniqueWithoutReplyToInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -953,6 +986,7 @@ export type MessageCreateWithoutReactionsInput = {
     sender: Prisma.UserCreateNestedOneWithoutMessagesInput;
     conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
     readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
+    poll?: Prisma.PollCreateNestedOneWithoutMessageInput;
 };
 export type MessageUncheckedCreateWithoutReactionsInput = {
     id?: number;
@@ -969,6 +1003,7 @@ export type MessageUncheckedCreateWithoutReactionsInput = {
     isPinned?: boolean;
     replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
     readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
+    poll?: Prisma.PollUncheckedCreateNestedOneWithoutMessageInput;
 };
 export type MessageCreateOrConnectWithoutReactionsInput = {
     where: Prisma.MessageWhereUniqueInput;
@@ -997,6 +1032,7 @@ export type MessageUpdateWithoutReactionsInput = {
     sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput;
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutReactionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1013,6 +1049,86 @@ export type MessageUncheckedUpdateWithoutReactionsInput = {
     isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
+};
+export type MessageCreateWithoutPollInput = {
+    content?: string | null;
+    fileUrl?: string | null;
+    type?: $Enums.MessageType;
+    isRecalled?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedByIds?: Prisma.MessageCreatedeletedByIdsInput | number[];
+    isPinned?: boolean;
+    replyTo?: Prisma.MessageCreateNestedOneWithoutRepliesInput;
+    replies?: Prisma.MessageCreateNestedManyWithoutReplyToInput;
+    sender: Prisma.UserCreateNestedOneWithoutMessagesInput;
+    conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput;
+    readByMembers?: Prisma.ConversationMemberCreateNestedManyWithoutLastReadMessageInput;
+    reactions?: Prisma.MessageReactionCreateNestedManyWithoutMessageInput;
+};
+export type MessageUncheckedCreateWithoutPollInput = {
+    id?: number;
+    content?: string | null;
+    fileUrl?: string | null;
+    type?: $Enums.MessageType;
+    isRecalled?: boolean;
+    replyToId?: number | null;
+    senderId: number;
+    conversationId: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedByIds?: Prisma.MessageCreatedeletedByIdsInput | number[];
+    isPinned?: boolean;
+    replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput;
+    readByMembers?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutLastReadMessageInput;
+    reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutMessageInput;
+};
+export type MessageCreateOrConnectWithoutPollInput = {
+    where: Prisma.MessageWhereUniqueInput;
+    create: Prisma.XOR<Prisma.MessageCreateWithoutPollInput, Prisma.MessageUncheckedCreateWithoutPollInput>;
+};
+export type MessageUpsertWithoutPollInput = {
+    update: Prisma.XOR<Prisma.MessageUpdateWithoutPollInput, Prisma.MessageUncheckedUpdateWithoutPollInput>;
+    create: Prisma.XOR<Prisma.MessageCreateWithoutPollInput, Prisma.MessageUncheckedCreateWithoutPollInput>;
+    where?: Prisma.MessageWhereInput;
+};
+export type MessageUpdateToOneWithWhereWithoutPollInput = {
+    where?: Prisma.MessageWhereInput;
+    data: Prisma.XOR<Prisma.MessageUpdateWithoutPollInput, Prisma.MessageUncheckedUpdateWithoutPollInput>;
+};
+export type MessageUpdateWithoutPollInput = {
+    content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    type?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType;
+    isRecalled?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedByIds?: Prisma.MessageUpdatedeletedByIdsInput | number[];
+    isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    replyTo?: Prisma.MessageUpdateOneWithoutRepliesNestedInput;
+    replies?: Prisma.MessageUpdateManyWithoutReplyToNestedInput;
+    sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput;
+    conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
+    readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
+    reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+};
+export type MessageUncheckedUpdateWithoutPollInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    fileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    type?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType;
+    isRecalled?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    replyToId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    senderId?: Prisma.IntFieldUpdateOperationsInput | number;
+    conversationId?: Prisma.IntFieldUpdateOperationsInput | number;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    deletedByIds?: Prisma.MessageUpdatedeletedByIdsInput | number[];
+    isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
+    readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
+    reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
 };
 export type MessageCreateManySenderInput = {
     id?: number;
@@ -1041,6 +1157,7 @@ export type MessageUpdateWithoutSenderInput = {
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutSenderInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1057,6 +1174,7 @@ export type MessageUncheckedUpdateWithoutSenderInput = {
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateManyWithoutSenderInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1098,6 +1216,7 @@ export type MessageUpdateWithoutConversationInput = {
     sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutConversationInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1114,6 +1233,7 @@ export type MessageUncheckedUpdateWithoutConversationInput = {
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateManyWithoutConversationInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1155,6 +1275,7 @@ export type MessageUpdateWithoutReplyToInput = {
     conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput;
     readByMembers?: Prisma.ConversationMemberUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateWithoutReplyToInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1171,6 +1292,7 @@ export type MessageUncheckedUpdateWithoutReplyToInput = {
     replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput;
     readByMembers?: Prisma.ConversationMemberUncheckedUpdateManyWithoutLastReadMessageNestedInput;
     reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutMessageNestedInput;
+    poll?: Prisma.PollUncheckedUpdateOneWithoutMessageNestedInput;
 };
 export type MessageUncheckedUpdateManyWithoutReplyToInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1226,6 +1348,7 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>;
     readByMembers?: boolean | Prisma.Message$readByMembersArgs<ExtArgs>;
     reactions?: boolean | Prisma.Message$reactionsArgs<ExtArgs>;
+    poll?: boolean | Prisma.Message$pollArgs<ExtArgs>;
     _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["message"]>;
 export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1284,6 +1407,7 @@ export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
     conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>;
     readByMembers?: boolean | Prisma.Message$readByMembersArgs<ExtArgs>;
     reactions?: boolean | Prisma.Message$reactionsArgs<ExtArgs>;
+    poll?: boolean | Prisma.Message$pollArgs<ExtArgs>;
     _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type MessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1305,6 +1429,7 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         conversation: Prisma.$ConversationPayload<ExtArgs>;
         readByMembers: Prisma.$ConversationMemberPayload<ExtArgs>[];
         reactions: Prisma.$MessageReactionPayload<ExtArgs>[];
+        poll: Prisma.$PollPayload<ExtArgs> | null;
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -1377,6 +1502,7 @@ export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.
     conversation<T extends Prisma.ConversationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConversationClient<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     readByMembers<T extends Prisma.Message$readByMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$readByMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     reactions<T extends Prisma.Message$reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    poll<T extends Prisma.Message$pollArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$pollArgs<ExtArgs>>): Prisma.Prisma__PollClient<runtime.Types.Result.GetResult<Prisma.$PollPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
     catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
     finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
@@ -1533,6 +1659,12 @@ export type Message$reactionsArgs<ExtArgs extends runtime.Types.Extensions.Inter
     take?: number;
     skip?: number;
     distinct?: Prisma.MessageReactionScalarFieldEnum | Prisma.MessageReactionScalarFieldEnum[];
+};
+export type Message$pollArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PollSelect<ExtArgs> | null;
+    omit?: Prisma.PollOmit<ExtArgs> | null;
+    include?: Prisma.PollInclude<ExtArgs> | null;
+    where?: Prisma.PollWhereInput;
 };
 export type MessageDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.MessageSelect<ExtArgs> | null;

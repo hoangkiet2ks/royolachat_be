@@ -16,12 +16,14 @@ const email_service_1 = require("./services/email.service");
 const access_token_guard_1 = require("./guards/access-token.guard");
 const s3_service_1 = require("./services/s3.service");
 const core_1 = require("@nestjs/core");
+const _2fa_service_1 = require("./services/2fa.service");
 const sharedServices = [
     prisma_service_1.PrismaService,
     hashing_service_1.HashingService,
     token_service_1.TokenService,
     email_service_1.EmailService,
     s3_service_1.S3Service,
+    _2fa_service_1.TwoFactorService
 ];
 const sharedProviders = [
     ...sharedServices,

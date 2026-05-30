@@ -21,6 +21,7 @@ export type AppRoleType = (typeof AppRole)[keyof typeof AppRole]
 export const TypeOfVerificationCode = {
   REGISTER: 'REGISTER',
   FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+  DISABLE_2FA: 'DISABLE_2FA',
 } as const
 
 export type TypeOfVerificationCodeType = (typeof TypeOfVerificationCode)[keyof typeof TypeOfVerificationCode]

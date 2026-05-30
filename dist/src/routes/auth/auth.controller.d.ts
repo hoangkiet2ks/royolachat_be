@@ -1,34 +1,39 @@
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { GoogleService } from './google.service';
-import { ForgotPasswordBodyDTO, LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO, SendOTPBodyDTO, UpdatePhoneBodyDTO } from './auth.dto';
+import { DisableTwoFactorBodyDTO, ForgotPasswordBodyDTO, LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO, SendOTPBodyDTO, UpdatePhoneBodyDTO } from './auth.dto';
+import { EmptyBodyDTO } from '@/shared/dtos/request.dto';
 export declare class AuthController {
     private readonly authService;
     private readonly googleService;
     constructor(authService: AuthService, googleService: GoogleService);
     register(body: RegisterBodyDTO): Promise<{
         id: number;
+        banner: string | null;
+        status: import("../../generated/prisma/enums").UserStatus;
         email: string;
         name: string;
+        appRole: import("../../generated/prisma/enums").AppRole;
         phoneNumber: string;
         avatar: string | null;
-        banner: string | null;
-        birthday: Date | null;
-        appRole: import("../../generated/prisma/enums").AppRole;
-        status: import("../../generated/prisma/enums").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        birthday: Date | null;
     }>;
     login(body: LoginBodyDTO, userAgent: string, ip: string): Promise<{
+        require2FA: boolean;
+    } | {
         name: string;
         email: string;
         avatar: string | null;
         phoneNumber: string;
         appRole: import("../../generated/prisma/enums").AppRole;
+        is2FAEnabled: boolean;
         accessToken: string;
         refreshToken: string;
         userId: number;
+        require2FA?: undefined;
     }>;
     sendOTP(body: SendOTPBodyDTO): Promise<{
         message: string;
@@ -42,6 +47,7 @@ export declare class AuthController {
         avatar: string | null;
         phoneNumber: string;
         appRole: import("../../generated/prisma/enums").AppRole;
+        is2FAEnabled: boolean;
         accessToken: string;
         refreshToken: string;
         userId: number;
@@ -53,6 +59,13 @@ export declare class AuthController {
         url: string;
     }>;
     googleCallback(code: string, state: string, res: Response): Promise<void>;
+    setupTwoFactorAuth(_: EmptyBodyDTO, userId: number): Promise<{
+        secret: string;
+        uri: string;
+    }>;
+    disableTwoFactorAuth(body: DisableTwoFactorBodyDTO, userId: number): Promise<{
+        message: string;
+    }>;
     updateAvatar(userId: number, file: Express.Multer.File): Promise<{
         avatar: string | null;
         email: string;
@@ -99,5 +112,6 @@ export declare class AuthController {
         appRole: import("../../generated/prisma/enums").AppRole;
         createdAt: Date;
         birthday: Date | null;
+        is2FAEnabled: boolean;
     }>;
 }

@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
+exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.PollVoteScalarFieldEnum = exports.PollOptionScalarFieldEnum = exports.PollScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/index-browser"));
 exports.Decimal = runtime.Decimal;
 exports.NullTypes = {
@@ -55,6 +55,9 @@ exports.ModelName = {
     Message: 'Message',
     GroupJoinRequest: 'GroupJoinRequest',
     MessageReaction: 'MessageReaction',
+    Poll: 'Poll',
+    PollOption: 'PollOption',
+    PollVote: 'PollVote',
     BotModerator: 'BotModerator',
     AiRateLimit: 'AiRateLimit'
 };
@@ -157,6 +160,27 @@ exports.MessageReactionScalarFieldEnum = {
     messageId: 'messageId',
     userId: 'userId',
     emoji: 'emoji',
+    createdAt: 'createdAt'
+};
+exports.PollScalarFieldEnum = {
+    id: 'id',
+    messageId: 'messageId',
+    title: 'title',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.PollOptionScalarFieldEnum = {
+    id: 'id',
+    pollId: 'pollId',
+    text: 'text',
+    order: 'order',
+    createdAt: 'createdAt'
+};
+exports.PollVoteScalarFieldEnum = {
+    id: 'id',
+    pollId: 'pollId',
+    optionId: 'optionId',
+    userId: 'userId',
     createdAt: 'createdAt'
 };
 exports.BotModeratorScalarFieldEnum = {

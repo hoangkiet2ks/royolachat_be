@@ -21,6 +21,9 @@ export declare const ModelName: {
     readonly Message: "Message";
     readonly GroupJoinRequest: "GroupJoinRequest";
     readonly MessageReaction: "MessageReaction";
+    readonly Poll: "Poll";
+    readonly PollOption: "PollOption";
+    readonly PollVote: "PollVote";
     readonly BotModerator: "BotModerator";
     readonly AiRateLimit: "AiRateLimit";
 };
@@ -137,6 +140,30 @@ export declare const MessageReactionScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum];
+export declare const PollScalarFieldEnum: {
+    readonly id: "id";
+    readonly messageId: "messageId";
+    readonly title: "title";
+    readonly createdAt: "createdAt";
+    readonly updatedAt: "updatedAt";
+};
+export type PollScalarFieldEnum = (typeof PollScalarFieldEnum)[keyof typeof PollScalarFieldEnum];
+export declare const PollOptionScalarFieldEnum: {
+    readonly id: "id";
+    readonly pollId: "pollId";
+    readonly text: "text";
+    readonly order: "order";
+    readonly createdAt: "createdAt";
+};
+export type PollOptionScalarFieldEnum = (typeof PollOptionScalarFieldEnum)[keyof typeof PollOptionScalarFieldEnum];
+export declare const PollVoteScalarFieldEnum: {
+    readonly id: "id";
+    readonly pollId: "pollId";
+    readonly optionId: "optionId";
+    readonly userId: "userId";
+    readonly createdAt: "createdAt";
+};
+export type PollVoteScalarFieldEnum = (typeof PollVoteScalarFieldEnum)[keyof typeof PollVoteScalarFieldEnum];
 export declare const BotModeratorScalarFieldEnum: {
     readonly id: "id";
     readonly conversationId: "conversationId";

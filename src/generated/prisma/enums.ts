@@ -31,7 +31,8 @@ export const MessageType = {
   IMAGE: 'IMAGE',
   FILE: 'FILE',
   SYSTEM: 'SYSTEM',
-  CALL_LOG: 'CALL_LOG'
+  CALL_LOG: 'CALL_LOG',
+  POLL: 'POLL'
 } as const
 
 export type MessageType = (typeof MessageType)[keyof typeof MessageType]
@@ -48,7 +49,8 @@ export type FriendshipStatus = (typeof FriendshipStatus)[keyof typeof Friendship
 
 export const VerificationCodeType = {
   REGISTER: 'REGISTER',
-  FORGOT_PASSWORD: 'FORGOT_PASSWORD'
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+  DISABLE_2FA: 'DISABLE_2FA'
 } as const
 
 export type VerificationCodeType = (typeof VerificationCodeType)[keyof typeof VerificationCodeType]

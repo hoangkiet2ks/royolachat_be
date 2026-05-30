@@ -15,6 +15,7 @@ export declare const MessageType: {
     readonly FILE: "FILE";
     readonly SYSTEM: "SYSTEM";
     readonly CALL_LOG: "CALL_LOG";
+    readonly POLL: "POLL";
 };
 export type MessageType = (typeof MessageType)[keyof typeof MessageType];
 export declare const FriendshipStatus: {
@@ -26,6 +27,7 @@ export type FriendshipStatus = (typeof FriendshipStatus)[keyof typeof Friendship
 export declare const VerificationCodeType: {
     readonly REGISTER: "REGISTER";
     readonly FORGOT_PASSWORD: "FORGOT_PASSWORD";
+    readonly DISABLE_2FA: "DISABLE_2FA";
 };
 export type VerificationCodeType = (typeof VerificationCodeType)[keyof typeof VerificationCodeType];
 export declare const UserStatus: {

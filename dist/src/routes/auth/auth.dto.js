@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdatePhoneBodyDTO = exports.ForgotPasswordBodyDTO = exports.GetAuthorizationUrlResDTO = exports.LogoutBodyDTO = exports.RefreshTokenResDTO = exports.RefreshTokenBodyDTO = exports.RefreshTokenDTO = exports.LoginResDTO = exports.LoginBodyDTO = exports.SendOTPBodyDTO = exports.RegisterResDTO = exports.RegisterBodyDTO = void 0;
+exports.UpdatePhoneBodyDTO = exports.TwoFactorSetupResDTO = exports.DisableTwoFactorBodyDTO = exports.ForgotPasswordBodyDTO = exports.GetAuthorizationUrlResDTO = exports.LogoutBodyDTO = exports.RefreshTokenResDTO = exports.RefreshTokenBodyDTO = exports.RefreshTokenDTO = exports.LoginResDTO = exports.LoginBodyDTO = exports.SendOTPBodyDTO = exports.RegisterResDTO = exports.RegisterBodyDTO = void 0;
 const nestjs_zod_1 = require("nestjs-zod");
 const auth_model_1 = require("./auth.model");
 class RegisterBodyDTO extends (0, nestjs_zod_1.createZodDto)(auth_model_1.RegisterBodySchema) {
@@ -36,6 +36,12 @@ exports.GetAuthorizationUrlResDTO = GetAuthorizationUrlResDTO;
 class ForgotPasswordBodyDTO extends (0, nestjs_zod_1.createZodDto)(auth_model_1.ForgotPasswordBodySchema) {
 }
 exports.ForgotPasswordBodyDTO = ForgotPasswordBodyDTO;
+class DisableTwoFactorBodyDTO extends (0, nestjs_zod_1.createZodDto)(auth_model_1.DisableTwoFactorBodySchema) {
+}
+exports.DisableTwoFactorBodyDTO = DisableTwoFactorBodyDTO;
+class TwoFactorSetupResDTO extends (0, nestjs_zod_1.createZodDto)(auth_model_1.TwoFactorSetupResSchema) {
+}
+exports.TwoFactorSetupResDTO = TwoFactorSetupResDTO;
 class UpdatePhoneBodyDTO extends (0, nestjs_zod_1.createZodDto)(auth_model_1.UpdatePhoneBodySchema) {
 }
 exports.UpdatePhoneBodyDTO = UpdatePhoneBodyDTO;

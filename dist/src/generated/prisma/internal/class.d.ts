@@ -58,6 +58,15 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get messageReaction(): Prisma.MessageReactionDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    get poll(): Prisma.PollDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get pollOption(): Prisma.PollOptionDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get pollVote(): Prisma.PollVoteDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
     get botModerator(): Prisma.BotModeratorDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;

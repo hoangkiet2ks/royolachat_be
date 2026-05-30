@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdatePhoneBodySchema = exports.ForgotPasswordBodySchema = exports.GetAuthorizationUrlResSchema = exports.GoogleAuthStateSchema = exports.LogoutBodySchema = exports.RefreshTokenSchema = exports.DeviceSchema = exports.RefreshTokenResSchema = exports.RefreshTokenBodySchema = exports.LoginResSchema = exports.LoginBodySchema = exports.SendOTPBodySchema = exports.VerificationCodeSchema = exports.RegisterResSchema = exports.RegisterBodySchema = exports.SafeUserSchema = exports.UserSchema = void 0;
+exports.UpdatePhoneBodySchema = exports.TwoFactorSetupResSchema = exports.DisableTwoFactorBodySchema = exports.ForgotPasswordBodySchema = exports.GetAuthorizationUrlResSchema = exports.GoogleAuthStateSchema = exports.LogoutBodySchema = exports.RefreshTokenSchema = exports.DeviceSchema = exports.RefreshTokenResSchema = exports.RefreshTokenBodySchema = exports.LoginResSchema = exports.LoginBodySchema = exports.SendOTPBodySchema = exports.VerificationCodeSchema = exports.RegisterResSchema = exports.RegisterBodySchema = exports.SafeUserSchema = exports.UserSchema = void 0;
 const auth_constant_1 = require("../../shared/constants/auth.constant");
 const zod_1 = __importDefault(require("zod"));
 exports.UserSchema = zod_1.default.object({
@@ -52,7 +52,7 @@ exports.VerificationCodeSchema = zod_1.default.object({
     id: zod_1.default.number(),
     email: zod_1.default.string().email(),
     code: zod_1.default.string().length(6),
-    type: zod_1.default.enum([auth_constant_1.TypeOfVerificationCode.FORGOT_PASSWORD, auth_constant_1.TypeOfVerificationCode.REGISTER]),
+    type: zod_1.default.enum([auth_constant_1.TypeOfVerificationCode.FORGOT_PASSWORD, auth_constant_1.TypeOfVerificationCode.REGISTER, auth_constant_1.TypeOfVerificationCode.DISABLE_2FA]),
     expiresAt: zod_1.default.date(),
     createdAt: zod_1.default.date(),
 });
@@ -64,17 +64,20 @@ exports.LoginBodySchema = zod_1.default
     .object({
     email: zod_1.default.string().email(),
     password: zod_1.default.string().min(6).max(500),
+    totpCode: zod_1.default.string().length(6).optional(),
 })
     .strict();
 exports.LoginResSchema = zod_1.default.object({
-    accessToken: zod_1.default.string(),
-    refreshToken: zod_1.default.string(),
-    userId: zod_1.default.number(),
-    name: zod_1.default.string(),
-    email: zod_1.default.string(),
-    avatar: zod_1.default.string().nullable(),
-    phoneNumber: zod_1.default.string(),
-    appRole: zod_1.default.enum([auth_constant_1.AppRole.USER, auth_constant_1.AppRole.ADMIN]),
+    require2FA: zod_1.default.boolean().optional(),
+    accessToken: zod_1.default.string().optional(),
+    refreshToken: zod_1.default.string().optional(),
+    userId: zod_1.default.number().optional(),
+    name: zod_1.default.string().optional(),
+    email: zod_1.default.string().optional(),
+    avatar: zod_1.default.string().nullable().optional(),
+    phoneNumber: zod_1.default.string().optional(),
+    appRole: zod_1.default.enum([auth_constant_1.AppRole.USER, auth_constant_1.AppRole.ADMIN]).optional(),
+    is2FAEnabled: zod_1.default.boolean().optional(),
 });
 exports.RefreshTokenBodySchema = zod_1.default
     .object({
@@ -122,6 +125,31 @@ exports.ForgotPasswordBodySchema = zod_1.default
             path: ['confirmNewPassword'],
         });
     }
+});
+exports.DisableTwoFactorBodySchema = zod_1.default
+    .object({
+    totpCode: zod_1.default.string().length(6).optional(),
+    code: zod_1.default.string().length(6).optional(),
+})
+    .strict()
+    .superRefine(({ totpCode, code }, ctx) => {
+    const message = 'Bạn phải cung cấp mã xác thực 2FA hoặc mã OTP. Không được cung cấp cả 2';
+    if ((totpCode !== undefined) === (code !== undefined)) {
+        ctx.addIssue({
+            path: ['totpCode'],
+            message,
+            code: 'custom',
+        });
+        ctx.addIssue({
+            path: ['code'],
+            message,
+            code: 'custom',
+        });
+    }
+});
+exports.TwoFactorSetupResSchema = zod_1.default.object({
+    secret: zod_1.default.string(),
+    uri: zod_1.default.string(),
 });
 exports.UpdatePhoneBodySchema = zod_1.default.object({
     phoneNumber: zod_1.default.string().min(1).max(50),

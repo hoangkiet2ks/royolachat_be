@@ -160,7 +160,7 @@ model Message {
   isRecalled     Boolean     @default(false) 
   
   // Tính năng Trả lời (Reply)
-  replyToId      Int?
+ replyToId      Int?
   replyTo        Message?    @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
   replies        Message[]   @relation("MessageReplies")
 
@@ -177,11 +177,15 @@ model Message {
 
   deletedByIds Int[] @default([])
 
+
   // Pin tin nhắn
   isPinned   Boolean @default(false)
 
   //reaction
   reactions  MessageReaction[]
+  
+  // Bình chọn
+  poll       Poll?
 }
 
 // ==========================================
@@ -205,6 +209,7 @@ enum MessageType {
   FILE
   SYSTEM
   CALL_LOG  // <--- Lịch sử Video Call (VD: "Cuộc gọi nhỡ", "Cuộc gọi kết thúc - 5p30s")
+  POLL      // <--- Tin nhắn bình chọn
 }
 
 enum FriendshipStatus {
@@ -216,6 +221,7 @@ enum FriendshipStatus {
 enum VerificationCodeType {
   REGISTER
   FORGOT_PASSWORD
+  DISABLE_2FA
 }
 
 enum UserStatus {
@@ -255,9 +261,50 @@ model MessageReaction {
   @@unique([messageId, userId]) 
 }
 
+// ==========================================// POLL / VOTING FEATURE
 // ==========================================
-// 4. MODULE: AI CHATBOT
-// ==========================================
+
+model Poll {
+  id        Int      @id @default(autoincrement())
+  messageId Int      @unique  // Mỗi tin nhắn POLL chỉ có 1 Poll
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  title     String   @db.Text  // Câu hỏi bình chọn
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  options   PollOption[]
+}
+
+model PollOption {
+  id        Int      @id @default(autoincrement())
+  pollId    Int
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  
+  text      String   @db.Text  // Nội dung lựa chọn
+  order     Int      @default(0)  // Thứ tự hiển thị
+  
+  votes     PollVote[]  // Danh sách vote cho option này
+  
+  createdAt DateTime @default(now())
+  
+  @@index([pollId])
+}
+
+model PollVote {
+  id        Int      @id @default(autoincrement())
+  pollId    Int      // Để theo dõi poll nhanh
+  optionId  Int
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  
+  userId    Int      // Người bình chọn
+  createdAt DateTime @default(now())
+  
+  @@unique([optionId, userId])  // 1 người chỉ vote 1 lần trên 1 option (cho phép multiple choice)
+  @@index([pollId])
+}
+
+// ==========================================// 4. MODULE: AI CHATBOT
 
 model BotModerator {
   id             Int          @id @default(autoincrement())

@@ -35,15 +35,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
     private readonly aiService: AiService,
-  ) {}
+  ) { }
 
   async handleConnection(client: Socket) {
     try {
       const token = client.handshake.auth.token?.split(' ')[1] || client.handshake.headers.authorization?.split(' ')[1];
-      
+
       console.log('[Socket] Client kết nối:', client.id);
       console.log('[Socket] Auth token có không:', !!token);
-      
+
       if (!token) {
         console.log('[Socket] KHÔNG CÓ TOKEN - ngắt kết nối');
         client.disconnect();
@@ -51,11 +51,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       const payload: any = this.jwtService.decode(token);
-      console.log('[Socket] Payload decode:', payload ? `userId=${payload.userId}` : 'NULL');
-      
+      const userId = Number(payload?.sub || payload?.userId || payload?.id);
+      console.log('[Socket] Payload decode userId:', userId);
+
       if (!payload) throw new Error('Token không hợp lệ');
 
-      const userId = payload.userId; 
       if (!userId) throw new Error('Không tìm thấy userId trong token');
 
       // Gắn ID vào client để dùng cho việc gửi tin nhắn sau này
@@ -101,11 +101,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendMessage')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { conversationId: number; content?: string; fileUrl?: string; type: 'TEXT' | 'IMAGE' | 'FILE' }
+    @MessageBody() payload: { conversationId: number; content?: string; fileUrl?: string; type: 'TEXT' | 'IMAGE' | 'FILE' | 'POLL'; replyToId?: number; pollData?: { title: string; options: string[] } }
   ) {
     try {
-      const userId = client.data.userId as number;
-      if (!userId) throw new Error('Chưa xác thực');
+      const userId = Number(client.data.userId);
+      if (!userId || isNaN(userId)) throw new Error('Chưa xác thực');
 
       // 1. Lưu vào Database
       const savedMessage = await this.chatService.saveMessage({
@@ -113,12 +113,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         conversationId: payload.conversationId,
         content: payload.content,
         fileUrl: payload.fileUrl,
-        type: payload.type || 'TEXT',
+        type: payload.type || 'TEXT' as any,
+        replyToId: payload.replyToId,
+        pollData: payload.pollData
       });
 
       // 2. Lấy thông tin conversation
       const conversationInfo = await this.chatService.getConversationInfo(payload.conversationId, userId);
-      
+
       // 3. Broadcast tin nhắn tới tất cả members
       if (conversationInfo && conversationInfo.members) {
         conversationInfo.members.forEach(member => {
@@ -144,11 +146,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (!conversationInfo?.isGroup && conversationInfo?.partnerIsBot) {
           const userSocketIds = this.userSockets.get(userId) || [];
           userSocketIds.forEach(sid => this.server.to(sid).emit('botTyping', { conversationId: payload.conversationId }));
+          // Lấy tên user để inject vào system prompt (Cấp độ 1)
+          const senderUser = await this.chatService.getUserById(userId);
+          const userName = senderUser?.name || `User ${userId}`;
           setImmediate(() => {
             this.aiService.processMessage({
               conversationId: payload.conversationId,
               content,
               userId,
+              userName,
               server: this.server,
               userSockets: this.userSockets,
             }).catch(err => console.error('[Gateway] processMessage error:', err));
@@ -192,12 +198,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     // Kiểm tra xem partnerId có đang nằm trong danh sách các socket đang kết nối không
     const isOnline = this.userSockets.has(partnerId) && (this.userSockets.get(partnerId)?.length || 0) > 0;
-    
+
     // Bắn câu trả lời về chỉ cho riêng cái tab vừa hỏi
     client.emit('statusAnswer', { partnerId, isOnline });
   }
 
-// HÀM QUAN TRỌNG: LẮNG NGHE LỆNH THU HỒI TỪ FRONTEND
+  // HÀM QUAN TRỌNG: LẮNG NGHE LỆNH THU HỒI TỪ FRONTEND
   @SubscribeMessage('recallMessage')
   async handleRecallMessage(
     @ConnectedSocket() client: Socket,
@@ -221,7 +227,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { status: 'error', message: 'Không thể thu hồi tin nhắn' };
     }
   }
-  
+
   // HÀM MỚI: Lắng nghe Frontend gọi lệnh xóa
   @SubscribeMessage('deleteMessage')
   async handleDeleteMessage(
@@ -249,10 +255,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('call:initiate')
   async handleCallInitiate(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { 
+    @MessageBody() payload: {
       targetUserId?: number;   // 1-1
-      conversationId: number; 
-      callType: 'audio' | 'video'; 
+      conversationId: number;
+      callType: 'audio' | 'video';
       callerName: string;
       callerAvatar?: string;
       isGroup?: boolean;
@@ -321,9 +327,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('call:answer')
   async handleCallAnswer(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { 
-      callerId: number; 
-      accepted: boolean; 
+    @MessageBody() payload: {
+      callerId: number;
+      accepted: boolean;
       conversationId: number;
       answererName?: string;
       isGroup?: boolean;
@@ -514,7 +520,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`[Friend] Sent friend request notification to user ${receiverId} from ${requester.name}`);
     }
   }
-  
+
   //Sự kiện 1 người ghim thì cả nhóm đều thấy
   @SubscribeMessage('togglePin')
   async handleTogglePin(
@@ -556,6 +562,70 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     } catch (error: any) {
       console.error('Lỗi thả reaction:', error.message);
+    }
+  }
+
+  // BẮT TÍN HIỆU ĐANG GÕ TYPING
+  @SubscribeMessage('typing')
+  handleTyping(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { conversationId: number; userName: string }
+  ) {
+    const userId = client.data.userId;
+    if (!userId) return;
+
+    // Phát tín hiệu cho mọi người trong phòng (trừ người gửi)
+    client.to(`conversation_${payload.conversationId}`).emit('userTyping', {
+      userId,
+      userName: payload.userName,
+    });
+  }
+
+  // BẮT TÍN HIỆU DỪNG GÕ
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { conversationId: number }
+  ) {
+    const userId = client.data.userId;
+    if (!userId) return;
+
+    client.to(`conversation_${payload.conversationId}`).emit('userStoppedTyping', {
+      userId,
+    });
+  }
+
+  @SubscribeMessage('votePoll')
+  async handleVotePoll(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { conversationId: number; pollId: number; optionId: number }
+  ) {
+    try {
+      const userId = client.data.userId;
+      if (!userId) throw new Error('Chưa xác thực');
+
+      const updatedPoll = await this.chatService.votePoll(userId, payload.pollId, payload.optionId);
+
+      this.server.to(`conversation_${payload.conversationId}`).emit('pollUpdated', updatedPoll);
+    } catch (error) {
+      console.error('Lỗi khi vote poll:', error);
+    }
+  }
+
+  @SubscribeMessage('addPollOption')
+  async handleAddPollOption(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { conversationId: number; pollId: number; text: string }
+  ) {
+    try {
+      const userId = client.data.userId;
+      if (!userId) throw new Error('Chưa xác thực');
+
+      const updatedPoll = await this.chatService.addPollOption(userId, payload.pollId, payload.text);
+
+      this.server.to(`conversation_${payload.conversationId}`).emit('pollUpdated', updatedPoll);
+    } catch (error) {
+      console.error('Lỗi khi thêm lựa chọn poll:', error);
     }
   }
 

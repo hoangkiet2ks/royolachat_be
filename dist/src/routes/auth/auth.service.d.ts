@@ -5,15 +5,17 @@ import { TokenService } from '@/shared/services/token.service';
 import { EmailService } from '@/shared/services/email.service';
 import { S3Service } from '@/shared/services/s3.service';
 import { AccessTokenPayloadCreate } from '@/shared/types/jwt.type';
-import { ForgotPasswordBodyType, LoginBodyType, RefreshTokenBodyType, RegisterBodyType, SendOTPBodyType } from './auth.model';
+import { DisableTwoFactorBodyType, ForgotPasswordBodyType, LoginBodyType, RefreshTokenBodyType, RegisterBodyType, SendOTPBodyType } from './auth.model';
 import { AuthRepository } from './auth.repo';
+import { TwoFactorService } from '@/shared/services/2fa.service';
 export declare class AuthService {
     private readonly hashingService;
     private readonly authRepository;
     private readonly emailService;
     private readonly tokenService;
     private readonly s3Service;
-    constructor(hashingService: HashingService, authRepository: AuthRepository, emailService: EmailService, tokenService: TokenService, s3Service: S3Service);
+    private readonly twoFactorService;
+    constructor(hashingService: HashingService, authRepository: AuthRepository, emailService: EmailService, tokenService: TokenService, s3Service: S3Service, twoFactorService: TwoFactorService);
     private ensureUserCanLogin;
     validateVerificationCode({ email, code, type, }: {
         email: string;
@@ -22,24 +24,24 @@ export declare class AuthService {
     }): Promise<{
         id: number;
         email: string;
+        type: import("../../generated/prisma/enums").VerificationCodeType;
         createdAt: Date;
         code: string;
-        type: import("../../generated/prisma/enums").VerificationCodeType;
         expiresAt: Date;
     }>;
     register(body: RegisterBodyType): Promise<{
         id: number;
+        banner: string | null;
+        status: import("../../generated/prisma/enums").UserStatus;
         email: string;
         name: string;
+        appRole: import("../../generated/prisma/enums").AppRole;
         phoneNumber: string;
         avatar: string | null;
-        banner: string | null;
-        birthday: Date | null;
-        appRole: import("../../generated/prisma/enums").AppRole;
-        status: import("../../generated/prisma/enums").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        birthday: Date | null;
     }>;
     sendOTP(body: SendOTPBodyType): Promise<{
         message: string;
@@ -48,14 +50,18 @@ export declare class AuthService {
         userAgent: string;
         ip: string;
     }): Promise<{
+        require2FA: boolean;
+    } | {
         name: string;
         email: string;
         avatar: string | null;
         phoneNumber: string;
         appRole: import("../../generated/prisma/enums").AppRole;
+        is2FAEnabled: boolean;
         accessToken: string;
         refreshToken: string;
         userId: number;
+        require2FA?: undefined;
     }>;
     refreshToken({ refreshToken, userAgent, ip }: RefreshTokenBodyType & {
         userAgent: string;
@@ -66,6 +72,7 @@ export declare class AuthService {
         avatar: string | null;
         phoneNumber: string;
         appRole: import("../../generated/prisma/enums").AppRole;
+        is2FAEnabled: boolean;
         accessToken: string;
         refreshToken: string;
         userId: number;
@@ -109,6 +116,7 @@ export declare class AuthService {
         appRole: import("../../generated/prisma/enums").AppRole;
         createdAt: Date;
         birthday: Date | null;
+        is2FAEnabled: boolean;
     }>;
     updateProfile(userId: number, name: string): Promise<{
         message: string;
@@ -119,6 +127,15 @@ export declare class AuthService {
         birthday: Date | null;
     }>;
     changePassword(userId: number, oldPassword: string, newPassword: string): Promise<{
+        message: string;
+    }>;
+    setupTwoFactorAuth(userId: number): Promise<{
+        secret: string;
+        uri: string;
+    }>;
+    disableTwoFactorAuth(data: DisableTwoFactorBodyType & {
+        userId: number;
+    }): Promise<{
         message: string;
     }>;
 }

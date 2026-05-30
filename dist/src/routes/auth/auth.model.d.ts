@@ -12,9 +12,9 @@ export declare const UserSchema: z.ZodObject<{
     }>;
     totpSecret: z.ZodNullable<z.ZodString>;
     status: z.ZodEnum<{
-        BLOCKED: "BLOCKED";
         ACTIVE: "ACTIVE";
         INACTIVE: "INACTIVE";
+        BLOCKED: "BLOCKED";
     }>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
@@ -22,19 +22,19 @@ export declare const UserSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const SafeUserSchema: z.ZodObject<{
     id: z.ZodNumber;
+    status: z.ZodEnum<{
+        ACTIVE: "ACTIVE";
+        INACTIVE: "INACTIVE";
+        BLOCKED: "BLOCKED";
+    }>;
     email: z.ZodString;
     name: z.ZodString;
-    phoneNumber: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
     appRole: z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
     }>;
-    status: z.ZodEnum<{
-        BLOCKED: "BLOCKED";
-        ACTIVE: "ACTIVE";
-        INACTIVE: "INACTIVE";
-    }>;
+    phoneNumber: z.ZodString;
+    avatar: z.ZodNullable<z.ZodString>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;
@@ -49,19 +49,19 @@ export declare const RegisterBodySchema: z.ZodObject<{
 }, z.core.$strict>;
 export declare const RegisterResSchema: z.ZodObject<{
     id: z.ZodNumber;
+    status: z.ZodEnum<{
+        ACTIVE: "ACTIVE";
+        INACTIVE: "INACTIVE";
+        BLOCKED: "BLOCKED";
+    }>;
     email: z.ZodString;
     name: z.ZodString;
-    phoneNumber: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
     appRole: z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
     }>;
-    status: z.ZodEnum<{
-        BLOCKED: "BLOCKED";
-        ACTIVE: "ACTIVE";
-        INACTIVE: "INACTIVE";
-    }>;
+    phoneNumber: z.ZodString;
+    avatar: z.ZodNullable<z.ZodString>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;
@@ -73,6 +73,7 @@ export declare const VerificationCodeSchema: z.ZodObject<{
     type: z.ZodEnum<{
         REGISTER: "REGISTER";
         FORGOT_PASSWORD: "FORGOT_PASSWORD";
+        DISABLE_2FA: "DISABLE_2FA";
     }>;
     expiresAt: z.ZodDate;
     createdAt: z.ZodDate;
@@ -82,40 +83,46 @@ export declare const SendOTPBodySchema: z.ZodObject<{
     type: z.ZodEnum<{
         REGISTER: "REGISTER";
         FORGOT_PASSWORD: "FORGOT_PASSWORD";
+        DISABLE_2FA: "DISABLE_2FA";
     }>;
 }, z.core.$strict>;
 export declare const LoginBodySchema: z.ZodObject<{
     email: z.ZodString;
     password: z.ZodString;
+    totpCode: z.ZodOptional<z.ZodString>;
 }, z.core.$strict>;
 export declare const LoginResSchema: z.ZodObject<{
-    accessToken: z.ZodString;
-    refreshToken: z.ZodString;
-    userId: z.ZodNumber;
-    name: z.ZodString;
-    email: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
-    phoneNumber: z.ZodString;
-    appRole: z.ZodEnum<{
+    require2FA: z.ZodOptional<z.ZodBoolean>;
+    accessToken: z.ZodOptional<z.ZodString>;
+    refreshToken: z.ZodOptional<z.ZodString>;
+    userId: z.ZodOptional<z.ZodNumber>;
+    name: z.ZodOptional<z.ZodString>;
+    email: z.ZodOptional<z.ZodString>;
+    avatar: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    phoneNumber: z.ZodOptional<z.ZodString>;
+    appRole: z.ZodOptional<z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
-    }>;
+    }>>;
+    is2FAEnabled: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 export declare const RefreshTokenBodySchema: z.ZodObject<{
     refreshToken: z.ZodString;
 }, z.core.$strict>;
 export declare const RefreshTokenResSchema: z.ZodObject<{
-    accessToken: z.ZodString;
-    refreshToken: z.ZodString;
-    userId: z.ZodNumber;
-    name: z.ZodString;
-    email: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
-    phoneNumber: z.ZodString;
-    appRole: z.ZodEnum<{
+    require2FA: z.ZodOptional<z.ZodBoolean>;
+    accessToken: z.ZodOptional<z.ZodString>;
+    refreshToken: z.ZodOptional<z.ZodString>;
+    userId: z.ZodOptional<z.ZodNumber>;
+    name: z.ZodOptional<z.ZodString>;
+    email: z.ZodOptional<z.ZodString>;
+    avatar: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    phoneNumber: z.ZodOptional<z.ZodString>;
+    appRole: z.ZodOptional<z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
-    }>;
+    }>>;
+    is2FAEnabled: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 export declare const DeviceSchema: z.ZodObject<{
     id: z.ZodNumber;
@@ -149,6 +156,16 @@ export declare const ForgotPasswordBodySchema: z.ZodObject<{
     newPassword: z.ZodString;
     confirmNewPassword: z.ZodString;
 }, z.core.$strict>;
+export declare const DisableTwoFactorBodySchema: z.ZodObject<{
+    totpCode: z.ZodOptional<z.ZodString>;
+    code: z.ZodOptional<z.ZodString>;
+}, z.core.$strict>;
+export declare const TwoFactorSetupResSchema: z.ZodObject<{
+    secret: z.ZodString;
+    uri: z.ZodString;
+}, z.core.$strip>;
+export type DisableTwoFactorBodyType = z.infer<typeof DisableTwoFactorBodySchema>;
+export type TwoFactorSetupResType = z.infer<typeof TwoFactorSetupResSchema>;
 export type UserType = z.infer<typeof UserSchema>;
 export type RegisterBodyType = z.infer<typeof RegisterBodySchema>;
 export type RegisterResType = z.infer<typeof RegisterResSchema>;

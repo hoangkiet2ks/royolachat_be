@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.AiRateLimitScalarFieldEnum = exports.BotModeratorScalarFieldEnum = exports.PollVoteScalarFieldEnum = exports.PollOptionScalarFieldEnum = exports.PollScalarFieldEnum = exports.MessageReactionScalarFieldEnum = exports.GroupJoinRequestScalarFieldEnum = exports.MessageScalarFieldEnum = exports.ConversationMemberScalarFieldEnum = exports.ConversationScalarFieldEnum = exports.FriendshipScalarFieldEnum = exports.RefreshTokenScalarFieldEnum = exports.DeviceScalarFieldEnum = exports.VerificationCodeScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 exports.PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError;
 exports.PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError;
@@ -70,6 +70,9 @@ exports.ModelName = {
     Message: 'Message',
     GroupJoinRequest: 'GroupJoinRequest',
     MessageReaction: 'MessageReaction',
+    Poll: 'Poll',
+    PollOption: 'PollOption',
+    PollVote: 'PollVote',
     BotModerator: 'BotModerator',
     AiRateLimit: 'AiRateLimit'
 };
@@ -172,6 +175,27 @@ exports.MessageReactionScalarFieldEnum = {
     messageId: 'messageId',
     userId: 'userId',
     emoji: 'emoji',
+    createdAt: 'createdAt'
+};
+exports.PollScalarFieldEnum = {
+    id: 'id',
+    messageId: 'messageId',
+    title: 'title',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.PollOptionScalarFieldEnum = {
+    id: 'id',
+    pollId: 'pollId',
+    text: 'text',
+    order: 'order',
+    createdAt: 'createdAt'
+};
+exports.PollVoteScalarFieldEnum = {
+    id: 'id',
+    pollId: 'pollId',
+    optionId: 'optionId',
+    userId: 'userId',
     createdAt: 'createdAt'
 };
 exports.BotModeratorScalarFieldEnum = {

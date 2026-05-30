@@ -17,10 +17,53 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
         conversationId: number;
         content?: string;
         fileUrl?: string;
-        type: 'TEXT' | 'IMAGE' | 'FILE';
+        type: 'TEXT' | 'IMAGE' | 'FILE' | 'POLL';
+        replyToId?: number;
+        pollData?: {
+            title: string;
+            options: string[];
+        };
     }): Promise<{
         status: string;
         data: {
+            poll: ({
+                options: ({
+                    votes: {
+                        id: number;
+                        userId: number;
+                        createdAt: Date;
+                        pollId: number;
+                        optionId: number;
+                    }[];
+                } & {
+                    id: number;
+                    text: string;
+                    createdAt: Date;
+                    order: number;
+                    pollId: number;
+                })[];
+            } & {
+                title: string;
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                messageId: number;
+            }) | null;
+            replyTo: {
+                id: number;
+                content: string | null;
+                type: import("../../generated/prisma/enums").MessageType;
+                sender: {
+                    name: string;
+                };
+            } | null;
+            reactions: {
+                id: number;
+                emoji: string;
+                userId: number;
+                createdAt: Date;
+                messageId: number;
+            }[];
             sender: {
                 id: number;
                 name: string;
@@ -28,17 +71,17 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
             };
         } & {
             id: number;
+            content: string | null;
+            type: import("../../generated/prisma/enums").MessageType;
             createdAt: Date;
             updatedAt: Date;
-            type: import("../../generated/prisma/enums").MessageType;
-            conversationId: number;
-            content: string | null;
             fileUrl: string | null;
             isRecalled: boolean;
-            replyToId: number | null;
-            senderId: number;
             deletedByIds: number[];
             isPinned: boolean;
+            replyToId: number | null;
+            conversationId: number;
+            senderId: number;
         };
         message?: undefined;
     } | {
@@ -123,5 +166,22 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
         messageId: number;
         conversationId: number;
         emoji: string;
+    }): Promise<void>;
+    handleTyping(client: Socket, payload: {
+        conversationId: number;
+        userName: string;
+    }): void;
+    handleStopTyping(client: Socket, payload: {
+        conversationId: number;
+    }): void;
+    handleVotePoll(client: Socket, payload: {
+        conversationId: number;
+        pollId: number;
+        optionId: number;
+    }): Promise<void>;
+    handleAddPollOption(client: Socket, payload: {
+        conversationId: number;
+        pollId: number;
+        text: string;
     }): Promise<void>;
 }

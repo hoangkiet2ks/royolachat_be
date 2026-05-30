@@ -13,56 +13,56 @@ export declare class ChatService {
         id: number;
         name: string;
     } | null>;
-    updateLastSeen(userId: number): Promise<{
-        id: number;
-        email: string;
-        name: string;
-        password: string;
-        phoneNumber: string;
-        avatar: string | null;
-        banner: string | null;
-        birthday: Date | null;
-        appRole: import("../../generated/prisma/enums").AppRole;
-        totpSecret: string | null;
-        status: import("../../generated/prisma/enums").UserStatus;
-        isBot: boolean;
-        lastSeenAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    updateLastSeen(userId: number): Promise<import("../../generated/prisma/internal/prismaNamespace").BatchPayload>;
     saveMessage(data: {
         senderId: number;
         conversationId: number;
         content?: string;
         fileUrl?: string;
-        type: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
-    }): Promise<{
-        sender: {
-            id: number;
-            name: string;
-            avatar: string | null;
+        type: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM' | 'POLL';
+        replyToId?: number;
+        pollData?: {
+            title: string;
+            options: string[];
         };
-    } & {
-        id: number;
-        createdAt: Date;
-        updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
-        fileUrl: string | null;
-        isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
-        deletedByIds: number[];
-        isPinned: boolean;
-    }>;
-    getMessages(conversationId: number, userId: number, limit?: number, offset?: number): Promise<({
-        reactions: {
+    }): Promise<{
+        poll: ({
+            options: ({
+                votes: {
+                    id: number;
+                    userId: number;
+                    createdAt: Date;
+                    pollId: number;
+                    optionId: number;
+                }[];
+            } & {
+                id: number;
+                text: string;
+                createdAt: Date;
+                order: number;
+                pollId: number;
+            })[];
+        } & {
+            title: string;
             id: number;
             createdAt: Date;
-            userId: number;
+            updatedAt: Date;
             messageId: number;
+        }) | null;
+        replyTo: {
+            id: number;
+            content: string | null;
+            type: import("../../generated/prisma/enums").MessageType;
+            sender: {
+                name: string;
+            };
+        } | null;
+        reactions: {
+            id: number;
             emoji: string;
+            userId: number;
+            createdAt: Date;
+            messageId: number;
         }[];
         sender: {
             id: number;
@@ -71,17 +71,75 @@ export declare class ChatService {
         };
     } & {
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
+    }>;
+    getMessages(conversationId: number, userId: number, limit?: number, offset?: number): Promise<({
+        poll: ({
+            options: ({
+                votes: {
+                    id: number;
+                    userId: number;
+                    createdAt: Date;
+                    pollId: number;
+                    optionId: number;
+                }[];
+            } & {
+                id: number;
+                text: string;
+                createdAt: Date;
+                order: number;
+                pollId: number;
+            })[];
+        } & {
+            title: string;
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            messageId: number;
+        }) | null;
+        replyTo: {
+            id: number;
+            content: string | null;
+            type: import("../../generated/prisma/enums").MessageType;
+            sender: {
+                name: string;
+            };
+        } | null;
+        reactions: {
+            id: number;
+            emoji: string;
+            userId: number;
+            createdAt: Date;
+            messageId: number;
+        }[];
+        sender: {
+            id: number;
+            name: string;
+            avatar: string | null;
+        };
+    } & {
+        id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
+        createdAt: Date;
+        updatedAt: Date;
+        fileUrl: string | null;
+        isRecalled: boolean;
+        deletedByIds: number[];
+        isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     })[]>;
     getOrCreateOneToOneConversation(userId: number, friendId: number): Promise<{
         id: number;
@@ -126,31 +184,31 @@ export declare class ChatService {
     uploadToS3(file: Express.Multer.File): Promise<string>;
     recallMessage(messageId: number, userId: number): Promise<{
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     }>;
     deleteMessageForUser(messageId: number, userId: number): Promise<{
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     }>;
     createGroupConversation(creatorId: number, groupName: string, memberIds: number[]): Promise<{
         members: ({
@@ -161,12 +219,12 @@ export declare class ChatService {
             };
         } & {
             id: number;
+            role: import("../../generated/prisma/enums").MemberRole;
             userId: number;
             conversationId: number;
-            role: import("../../generated/prisma/enums").MemberRole;
             joinedAt: Date;
-            lastReadMessageId: number | null;
             clearedAt: Date | null;
+            lastReadMessageId: number | null;
         })[];
     } & {
         id: number;
@@ -196,45 +254,45 @@ export declare class ChatService {
     } & {
         id: number;
         status: string;
-        createdAt: Date;
         userId: number;
+        createdAt: Date;
         conversationId: number;
         inviterId: number;
     })[]>;
     approveJoinRequest(requestId: number, requesterId: number): Promise<{
         id: number;
+        role: import("../../generated/prisma/enums").MemberRole;
         userId: number;
         conversationId: number;
-        role: import("../../generated/prisma/enums").MemberRole;
         joinedAt: Date;
-        lastReadMessageId: number | null;
         clearedAt: Date | null;
+        lastReadMessageId: number | null;
     }>;
     rejectJoinRequest(requestId: number, requesterId: number): Promise<{
         id: number;
         status: string;
-        createdAt: Date;
         userId: number;
+        createdAt: Date;
         conversationId: number;
         inviterId: number;
     }>;
     kickMember(conversationId: number, requesterId: number, targetUserId: number): Promise<{
         id: number;
+        role: import("../../generated/prisma/enums").MemberRole;
         userId: number;
         conversationId: number;
-        role: import("../../generated/prisma/enums").MemberRole;
         joinedAt: Date;
-        lastReadMessageId: number | null;
         clearedAt: Date | null;
+        lastReadMessageId: number | null;
     }>;
     assignRole(conversationId: number, requesterId: number, targetUserId: number, newRole: string): Promise<{
         id: number;
+        role: import("../../generated/prisma/enums").MemberRole;
         userId: number;
         conversationId: number;
-        role: import("../../generated/prisma/enums").MemberRole;
         joinedAt: Date;
-        lastReadMessageId: number | null;
         clearedAt: Date | null;
+        lastReadMessageId: number | null;
     }>;
     disbandGroup(conversationId: number, requesterId: number): Promise<{
         id: number;
@@ -268,17 +326,17 @@ export declare class ChatService {
         };
     } & {
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     })[]>;
     togglePinMessage(messageId: number, conversationId: number, userId: number): Promise<{
         sender: {
@@ -288,17 +346,17 @@ export declare class ChatService {
         };
     } & {
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     }>;
     toggleReaction(messageId: number, userId: number, emoji: string): Promise<{
         action: string;
@@ -311,4 +369,50 @@ export declare class ChatService {
         userId: number;
         emoji: string;
     }>;
+    votePoll(userId: number, pollId: number, optionId: number): Promise<({
+        options: ({
+            votes: {
+                id: number;
+                userId: number;
+                createdAt: Date;
+                pollId: number;
+                optionId: number;
+            }[];
+        } & {
+            id: number;
+            text: string;
+            createdAt: Date;
+            order: number;
+            pollId: number;
+        })[];
+    } & {
+        title: string;
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        messageId: number;
+    }) | null>;
+    addPollOption(userId: number, pollId: number, text: string): Promise<({
+        options: ({
+            votes: {
+                id: number;
+                userId: number;
+                createdAt: Date;
+                pollId: number;
+                optionId: number;
+            }[];
+        } & {
+            id: number;
+            text: string;
+            createdAt: Date;
+            order: number;
+            pollId: number;
+        })[];
+    } & {
+        title: string;
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        messageId: number;
+    }) | null>;
 }

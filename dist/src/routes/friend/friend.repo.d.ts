@@ -40,8 +40,8 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        requesterId: number;
         receiverId: number;
+        requesterId: number;
     }>;
     acceptFriendRequest(requesterId: number, receiverId: number): Promise<{
         receiver: {
@@ -63,8 +63,8 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        requesterId: number;
         receiverId: number;
+        requesterId: number;
     }>;
     getFriendList(userId: number): Promise<{
         id: number;
@@ -86,23 +86,23 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        requesterId: number;
         receiverId: number;
+        requesterId: number;
     })[]>;
     rejectFriendRequest(requesterId: number, receiverId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        requesterId: number;
         receiverId: number;
+        requesterId: number;
     }>;
     deleteFriendship(userId: number, friendId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        requesterId: number;
         receiverId: number;
+        requesterId: number;
     }>;
 }
