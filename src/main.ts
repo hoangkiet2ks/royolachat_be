@@ -8,6 +8,8 @@ async function bootstrap() {
     'http://localhost:3300',
     'http://localhost:5173',
     'http://localhost:8081',
+    'https://app',           // Capacitor Android
+    'capacitor://localhost', // Capacitor iOS
     /\.netlify\.app$/,
     /\.nip\.io$/,
   ];
