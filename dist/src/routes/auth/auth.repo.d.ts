@@ -6,61 +6,61 @@ export declare class AuthRepository {
     constructor(prismaService: PrismaService);
     createUser(data: Prisma.UserCreateInput): Prisma.Prisma__UserClient<{
         id: number;
-        banner: string | null;
-        status: import("@/generated/prisma/client").UserStatus;
         email: string;
         name: string;
-        appRole: import("@/generated/prisma/client").AppRole;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("@/generated/prisma/client").AppRole;
+        status: import("@/generated/prisma/client").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     findUniqueUser(where: Prisma.UserWhereUniqueInput): Prisma.Prisma__UserClient<{
         id: number;
-        banner: string | null;
-        status: import("@/generated/prisma/client").UserStatus;
         email: string;
         name: string;
-        appRole: import("@/generated/prisma/client").AppRole;
         password: string;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("@/generated/prisma/client").AppRole;
         totpSecret: string | null;
+        status: import("@/generated/prisma/client").UserStatus;
+        isBot: boolean;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
-        isBot: boolean;
     } | null, null, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     findUniqueSafeUser(where: Prisma.UserWhereUniqueInput): Prisma.Prisma__UserClient<{
         id: number;
-        banner: string | null;
-        status: import("@/generated/prisma/client").UserStatus;
         email: string;
         name: string;
-        appRole: import("@/generated/prisma/client").AppRole;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("@/generated/prisma/client").AppRole;
+        status: import("@/generated/prisma/client").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
     } | null, null, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     createVerificationCode(payload: Prisma.VerificationCodeUncheckedCreateInput): Prisma.Prisma__VerificationCodeClient<{
         id: number;
         email: string;
-        type: import("@/generated/prisma/client").VerificationCodeType;
         createdAt: Date;
         code: string;
+        type: import("@/generated/prisma/client").VerificationCodeType;
         expiresAt: Date;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
@@ -68,9 +68,9 @@ export declare class AuthRepository {
     findUniqueVerificationCode(where: Prisma.VerificationCodeWhereUniqueInput): Prisma.Prisma__VerificationCodeClient<{
         id: number;
         email: string;
-        type: import("@/generated/prisma/client").VerificationCodeType;
         createdAt: Date;
         code: string;
+        type: import("@/generated/prisma/client").VerificationCodeType;
         expiresAt: Date;
     } | null, null, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
@@ -78,72 +78,72 @@ export declare class AuthRepository {
     deleteVerificationCode(where: Prisma.VerificationCodeWhereUniqueInput): Prisma.Prisma__VerificationCodeClient<{
         id: number;
         email: string;
-        type: import("@/generated/prisma/client").VerificationCodeType;
         createdAt: Date;
         code: string;
+        type: import("@/generated/prisma/client").VerificationCodeType;
         expiresAt: Date;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     createRefreshToken(data: Prisma.RefreshTokenUncheckedCreateInput): Prisma.Prisma__RefreshTokenClient<{
-        token: string;
-        userId: number;
-        deviceId: number;
         createdAt: Date;
         expiresAt: Date;
+        userId: number;
+        token: string;
+        deviceId: number;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     findUniqueRefreshTokenIncludeUser(where: Prisma.RefreshTokenWhereUniqueInput): Prisma.Prisma__RefreshTokenClient<({
         user: {
             id: number;
-            banner: string | null;
-            status: import("@/generated/prisma/client").UserStatus;
             email: string;
             name: string;
-            appRole: import("@/generated/prisma/client").AppRole;
             password: string;
             phoneNumber: string;
             avatar: string | null;
+            banner: string | null;
+            birthday: Date | null;
+            appRole: import("@/generated/prisma/client").AppRole;
             totpSecret: string | null;
+            status: import("@/generated/prisma/client").UserStatus;
+            isBot: boolean;
             lastSeenAt: Date | null;
             createdAt: Date;
             updatedAt: Date;
-            birthday: Date | null;
-            isBot: boolean;
         };
         device: {
             id: number;
-            userId: number;
             createdAt: Date;
+            userId: number;
             userAgent: string;
             ip: string;
             isActive: boolean;
             lastActive: Date;
         };
     } & {
-        token: string;
-        userId: number;
-        deviceId: number;
         createdAt: Date;
         expiresAt: Date;
+        userId: number;
+        token: string;
+        deviceId: number;
     }) | null, null, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     deleteRefreshToken(where: Prisma.RefreshTokenWhereUniqueInput): Prisma.Prisma__RefreshTokenClient<{
-        token: string;
-        userId: number;
-        deviceId: number;
         createdAt: Date;
         expiresAt: Date;
+        userId: number;
+        token: string;
+        deviceId: number;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;
     deleteRefreshTokensByUserId(userId: number): Prisma.PrismaPromise<Prisma.BatchPayload>;
     createDevice(data: Prisma.DeviceUncheckedCreateInput): Prisma.Prisma__DeviceClient<{
         id: number;
-        userId: number;
         createdAt: Date;
+        userId: number;
         userAgent: string;
         ip: string;
         isActive: boolean;
@@ -153,8 +153,8 @@ export declare class AuthRepository {
     }>;
     updateDevice(deviceId: number, data: Prisma.DeviceUncheckedUpdateInput): Prisma.Prisma__DeviceClient<{
         id: number;
-        userId: number;
         createdAt: Date;
+        userId: number;
         userAgent: string;
         ip: string;
         isActive: boolean;
@@ -165,17 +165,17 @@ export declare class AuthRepository {
     deactivateDevicesByUserId(userId: number): Prisma.PrismaPromise<Prisma.BatchPayload>;
     updateUser(where: Prisma.UserWhereUniqueInput, data: Prisma.UserUpdateInput): Prisma.Prisma__UserClient<{
         id: number;
-        banner: string | null;
-        status: import("@/generated/prisma/client").UserStatus;
         email: string;
         name: string;
-        appRole: import("@/generated/prisma/client").AppRole;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("@/generated/prisma/client").AppRole;
+        status: import("@/generated/prisma/client").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
     }, never, import("@prisma/client/runtime/client").DefaultArgs, {
         omit: Prisma.GlobalOmitConfig | undefined;
     }>;

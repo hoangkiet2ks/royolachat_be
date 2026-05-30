@@ -12,9 +12,9 @@ export declare const UserSchema: z.ZodObject<{
     }>;
     totpSecret: z.ZodNullable<z.ZodString>;
     status: z.ZodEnum<{
+        BLOCKED: "BLOCKED";
         ACTIVE: "ACTIVE";
         INACTIVE: "INACTIVE";
-        BLOCKED: "BLOCKED";
     }>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
@@ -22,19 +22,19 @@ export declare const UserSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const SafeUserSchema: z.ZodObject<{
     id: z.ZodNumber;
-    status: z.ZodEnum<{
-        ACTIVE: "ACTIVE";
-        INACTIVE: "INACTIVE";
-        BLOCKED: "BLOCKED";
-    }>;
     email: z.ZodString;
     name: z.ZodString;
+    phoneNumber: z.ZodString;
+    avatar: z.ZodNullable<z.ZodString>;
     appRole: z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
     }>;
-    phoneNumber: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
+    status: z.ZodEnum<{
+        BLOCKED: "BLOCKED";
+        ACTIVE: "ACTIVE";
+        INACTIVE: "INACTIVE";
+    }>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;
@@ -49,19 +49,19 @@ export declare const RegisterBodySchema: z.ZodObject<{
 }, z.core.$strict>;
 export declare const RegisterResSchema: z.ZodObject<{
     id: z.ZodNumber;
-    status: z.ZodEnum<{
-        ACTIVE: "ACTIVE";
-        INACTIVE: "INACTIVE";
-        BLOCKED: "BLOCKED";
-    }>;
     email: z.ZodString;
     name: z.ZodString;
+    phoneNumber: z.ZodString;
+    avatar: z.ZodNullable<z.ZodString>;
     appRole: z.ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
     }>;
-    phoneNumber: z.ZodString;
-    avatar: z.ZodNullable<z.ZodString>;
+    status: z.ZodEnum<{
+        BLOCKED: "BLOCKED";
+        ACTIVE: "ACTIVE";
+        INACTIVE: "INACTIVE";
+    }>;
     lastSeenAt: z.ZodNullable<z.ZodDate>;
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;

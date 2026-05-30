@@ -36,8 +36,8 @@ export declare class FriendController {
             status: import("../../generated/prisma/enums").FriendshipStatus;
             createdAt: Date;
             updatedAt: Date;
-            receiverId: number;
             requesterId: number;
+            receiverId: number;
         };
         error: null;
     }>;
@@ -63,8 +63,8 @@ export declare class FriendController {
             status: import("../../generated/prisma/enums").FriendshipStatus;
             createdAt: Date;
             updatedAt: Date;
-            receiverId: number;
             requesterId: number;
+            receiverId: number;
         };
         error: null;
     }>;
@@ -99,8 +99,8 @@ export declare class FriendController {
             status: import("../../generated/prisma/enums").FriendshipStatus;
             createdAt: Date;
             updatedAt: Date;
-            receiverId: number;
             requesterId: number;
+            receiverId: number;
         })[];
         error: null;
     }>;

@@ -38,9 +38,9 @@ export declare const FriendshipSchema: z.ZodObject<{
         email: z.ZodString;
     }, z.core.$strip>;
     status: z.ZodEnum<{
-        BLOCKED: "BLOCKED";
         PENDING: "PENDING";
         ACCEPTED: "ACCEPTED";
+        BLOCKED: "BLOCKED";
     }>;
     createdAt: z.ZodUnion<[z.ZodDate, z.ZodString]>;
     updatedAt: z.ZodUnion<[z.ZodDate, z.ZodString]>;
@@ -79,9 +79,9 @@ export declare const AddFriendResSchema: z.ZodObject<{
             email: z.ZodString;
         }, z.core.$strip>;
         status: z.ZodEnum<{
-            BLOCKED: "BLOCKED";
             PENDING: "PENDING";
             ACCEPTED: "ACCEPTED";
+            BLOCKED: "BLOCKED";
         }>;
         createdAt: z.ZodUnion<[z.ZodDate, z.ZodString]>;
         updatedAt: z.ZodUnion<[z.ZodDate, z.ZodString]>;

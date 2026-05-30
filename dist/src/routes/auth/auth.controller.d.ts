@@ -9,17 +9,17 @@ export declare class AuthController {
     constructor(authService: AuthService, googleService: GoogleService);
     register(body: RegisterBodyDTO): Promise<{
         id: number;
-        banner: string | null;
-        status: import("../../generated/prisma/enums").UserStatus;
         email: string;
         name: string;
-        appRole: import("../../generated/prisma/enums").AppRole;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("../../generated/prisma/enums").AppRole;
+        status: import("../../generated/prisma/enums").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
     }>;
     login(body: LoginBodyDTO, userAgent: string, ip: string): Promise<{
         require2FA: boolean;
