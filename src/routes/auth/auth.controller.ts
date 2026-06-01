@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Ip, Post, Query, Res, Patch, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Ip, Param, Post, Query, Res, Patch, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { ZodSerializerDto } from 'nestjs-zod'
@@ -152,5 +152,10 @@ export class AuthController {
   @Get('me')
   getCurrentUser(@ActiveUser('userId') userId: number) {
     return this.authService.getCurrentUser(userId)
+  }
+
+  @Get('user/:userId')
+  getUserProfile(@Param('userId') userId: string, @ActiveUser('userId') myId: number) {
+    return this.authService.getUserProfile(Number(userId))
   }
 }

@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Merge CORS: giữ cả EC2 IP gốc và Capacitor mobile origins
   const allowedOrigins = [
     'https://royolachat.netlify.app',
     'http://localhost:3300',
@@ -16,7 +18,6 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Cho phép React Native / mobile app (không có origin header)
       if (!origin) return callback(null, true);
 
       const isAllowed = allowedOrigins.some((o) =>

@@ -372,6 +372,20 @@ export class AuthService {
     }
   }
 
+  async getUserProfile(userId: number) {
+    const user = await this.authRepository.findUniqueUser({ id: userId })
+    if (!user) throw EmailNotFoundException
+
+    return {
+      name: user.name,
+      avatar: user.avatar,
+      banner: user.banner,
+      phoneNumber: user.phoneNumber,
+      email: user.email,
+      birthday: user.birthday,
+    }
+  }
+
   async updateProfile(userId: number, name: string) {
     if (!name || name.trim().length === 0) {
       throw new HttpException('Tên không được để trống', 400)

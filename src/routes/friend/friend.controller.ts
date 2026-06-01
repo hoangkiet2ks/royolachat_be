@@ -1,15 +1,19 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common'
+import { Controller, Post, Get, Body, UseGuards, Param } from '@nestjs/common'
 import { FriendService } from './friend.service'
 import { AccessTokenGuard } from '../../shared/guards/access-token.guard'
 import { ActiveUser } from '../../shared/decorators/active-user.decorator'
 import CustomZodValidationPipe from '../../shared/pipes/custom-zod-validation.pipe'
+import { AuthType } from '../../shared/constants/auth.constant'
+import { Auth } from '../../shared/decorators/auth.decorator'
 import {
   SearchUserSchema,
   AddFriendSchema,
   AcceptFriendSchema,
+  BlockUserSchema,
   type SearchUserBody,
   type AddFriendBody,
   type AcceptFriendBody,
+  type BlockUserBody,
 } from './friend.model'
 
 @Controller('friend')
@@ -126,6 +130,72 @@ export class FriendController {
     return {
       success: true,
       data: result,
+      error: null,
+    }
+  }
+
+  /**
+   * Chặn người dùng
+   * POST /friend/block
+   */
+  @Post('block')
+  async blockUser(
+    @ActiveUser() activeUser: any,
+    @Body(new CustomZodValidationPipe(BlockUserSchema)) body: BlockUserBody,
+  ) {
+    const result = await this.friendService.blockUser(activeUser.userId, body)
+    return {
+      success: true,
+      data: result,
+      error: null,
+    }
+  }
+
+  /**
+   * Bỏ chặn người dùng
+   * POST /friend/unblock
+   */
+  @Post('unblock')
+  async unblockUser(
+    @ActiveUser() activeUser: any,
+    @Body(new CustomZodValidationPipe(BlockUserSchema)) body: BlockUserBody,
+  ) {
+    const result = await this.friendService.unblockUser(activeUser.userId, body)
+    return {
+      success: true,
+      data: result,
+      error: null,
+    }
+  }
+
+  /**
+   * Lấy danh sách đang chặn
+   * GET /friend/blocked
+   */
+  @Get('blocked')
+  async getBlockList(@ActiveUser() activeUser: any) {
+    const blocked = await this.friendService.getBlockList(activeUser.userId)
+    return {
+      success: true,
+      data: blocked,
+      error: null,
+    }
+  }
+
+  /**
+   * Kiểm tra trạng thái block với một người cụ thể
+   * GET /friend/block-status?userId=xxx  → dùng POST body cho đơn giản
+   * POST /friend/block-status
+   */
+  @Post('block-status')
+  async checkBlockStatus(
+    @ActiveUser() activeUser: any,
+    @Body() body: { userId: number },
+  ) {
+    const result = await this.friendService.checkBlockStatus(activeUser.userId, body.userId)
+    return {
+      success: true,
+      data: result, // null = không block, { blockedBy } = ai đang chặn
       error: null,
     }
   }

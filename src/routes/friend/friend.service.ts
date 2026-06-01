@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, Inject, forwardRef } from '@nestjs/common'
 import { FriendRepository } from './friend.repo'
-import { SearchUserBody, AddFriendBody, AcceptFriendBody } from './friend.model'
+import { SearchUserBody, AddFriendBody, AcceptFriendBody, BlockUserBody } from './friend.model'
 import { ChatGateway } from '../chat/chat.gateway'
 
 @Injectable()
@@ -9,7 +9,7 @@ export class FriendService {
     private friendRepo: FriendRepository,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
-  ) {}
+  ) { }
 
   // Tìm kiếm user theo số điện thoại
   async searchUser(userId: number, body: SearchUserBody) {
@@ -57,6 +57,9 @@ export class FriendService {
       }
       if (existing.status === 'PENDING') {
         throw new BadRequestException('Đã gửi lời mời rồi')
+      }
+      if (existing.status === 'BLOCKED') {
+        throw new BadRequestException('Không thể kết bạn với người dùng này')
       }
     }
 
@@ -127,7 +130,7 @@ export class FriendService {
 
     // Tìm friendship giữa 2 người
     const friendship = await this.friendRepo.checkFriendshipStatus(userId, friendId)
-    
+
     if (!friendship) {
       throw new NotFoundException('Không tìm thấy mối quan hệ bạn bè')
     }
@@ -138,7 +141,69 @@ export class FriendService {
 
     // Xóa friendship
     await this.friendRepo.deleteFriendship(userId, friendId)
-    
+
     return { message: 'Đã xóa bạn bè thành công' }
+  }
+
+  // ==========================================
+  // BLOCK / UNBLOCK
+  // ==========================================
+
+  /**
+   * Chặn người dùng
+   */
+  async blockUser(userId: number, body: BlockUserBody) {
+    if (userId === body.userId) {
+      throw new BadRequestException('Không thể chặn chính mình')
+    }
+
+    const target = await this.friendRepo.findUserById(body.userId)
+    if (!target) {
+      throw new NotFoundException('Người dùng không tồn tại')
+    }
+
+    // Kiểm tra xem đã chặn chưa
+    const existing = await this.friendRepo.checkBlockStatus(userId, body.userId)
+    if (existing && existing.blockerIds.includes(userId)) {
+      throw new BadRequestException('Bạn đã chặn người này rồi')
+    }
+
+    await this.friendRepo.blockUser(userId, body.userId)
+
+    // Thông báo socket cho người bị chặn (để họ biết không nhắn được nữa)
+    this.chatGateway.notifyBlocked(body.userId, userId)
+
+    return { message: 'Đã chặn người dùng thành công' }
+  }
+
+  /**
+   * Bỏ chặn người dùng
+   */
+  async unblockUser(userId: number, body: BlockUserBody) {
+    if (userId === body.userId) {
+      throw new BadRequestException('Không thể bỏ chặn chính mình')
+    }
+
+    await this.friendRepo.unblockUser(userId, body.userId)
+
+    // Thông báo socket: đã bỏ chặn
+    this.chatGateway.notifyUnblocked(body.userId, userId)
+
+    return { message: 'Đã bỏ chặn người dùng thành công' }
+  }
+
+  /**
+   * Lấy danh sách đang chặn
+   */
+  async getBlockList(userId: number) {
+    return this.friendRepo.getBlockList(userId)
+  }
+
+  /**
+   * Kiểm tra trạng thái block (dùng cho ChatRoom)
+   * Trả về: { blockedBy: number | null } hoặc null
+   */
+  async checkBlockStatus(userA: number, userB: number) {
+    return this.friendRepo.checkBlockStatus(userA, userB)
   }
 }

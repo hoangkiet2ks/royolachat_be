@@ -42,9 +42,11 @@ export class FriendRepository {
           { requesterId: receiverId, receiverId: requesterId },
         ],
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true, blockerIds: true, requesterId: true, receiverId: true },
     })
   }
+
+
 
   // Tạo lời mời kết bạn
   async createFriendRequest(requesterId: number, receiverId: number) {
@@ -134,7 +136,6 @@ export class FriendRepository {
 
   // Xóa bạn bè (xóa friendship)
   async deleteFriendship(userId: number, friendId: number) {
-    // Tìm friendship (có thể là requesterId hoặc receiverId)
     const friendship = await this.prisma.friendship.findFirst({
       where: {
         OR: [
@@ -156,6 +157,121 @@ export class FriendRepository {
           receiverId: friendship.receiverId,
         },
       },
+    })
+  }
+
+  // ==========================================
+  // BLOCK / UNBLOCK
+  // ==========================================
+
+  /**
+   * Chặn người dùng: blockerId chặn targetId
+   * - Nếu đã có friendship (ACCEPTED/PENDING): cập nhật thành BLOCKED
+   * - Nếu chưa có: tạo mới record BLOCKED
+   */
+  async blockUser(blockerId: number, targetId: number) {
+    const existing = await this.prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: blockerId, receiverId: targetId },
+          { requesterId: targetId, receiverId: blockerId },
+        ],
+      },
+    })
+
+    if (existing) {
+      const newBlockerIds = existing.blockerIds.includes(blockerId) 
+        ? existing.blockerIds 
+        : [...existing.blockerIds, blockerId]
+
+      return this.prisma.friendship.update({
+        where: { id: existing.id },
+        data: { status: 'BLOCKED', blockerIds: newBlockerIds },
+      })
+    } else {
+      return this.prisma.friendship.create({
+        data: {
+          requesterId: blockerId,
+          receiverId: targetId,
+          status: 'BLOCKED',
+          blockerIds: [blockerId],
+        },
+      })
+    }
+  }
+
+  /**
+   * Bỏ chặn: blockerId bỏ chặn targetId
+   * Xóa record BLOCKED
+   */
+  async unblockUser(blockerId: number, targetId: number) {
+    const existing = await this.prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: blockerId, receiverId: targetId },
+          { requesterId: targetId, receiverId: blockerId },
+        ],
+        status: 'BLOCKED',
+        blockerIds: { has: blockerId },
+      },
+    })
+
+    if (!existing) {
+      throw new Error('Không tìm thấy bản ghi chặn người này')
+    }
+
+    const newBlockerIds = existing.blockerIds.filter(id => id !== blockerId)
+
+    if (newBlockerIds.length === 0) {
+      // Nếu không còn ai chặn, thì xóa luôn (hoặc có thể đưa về PENDING, ở đây tôi xóa luôn theo logic cũ)
+      return this.prisma.friendship.delete({
+        where: { id: existing.id },
+      })
+    } else {
+      // Nếu vẫn còn người kia chặn thì giữ lại trạng thái BLOCKED và cập nhật blockerIds
+      return this.prisma.friendship.update({
+        where: { id: existing.id },
+        data: { blockerIds: newBlockerIds },
+      })
+    }
+  }
+
+  /**
+   * Lấy danh sách người dùng bị userId chặn
+   */
+  async getBlockList(userId: number) {
+    const blocked = await this.prisma.friendship.findMany({
+      where: {
+        status: 'BLOCKED',
+        blockerIds: { has: userId },
+        OR: [
+          { requesterId: userId },
+          { receiverId: userId },
+        ],
+      },
+      include: {
+        requester: { select: { id: true, name: true, avatar: true, phoneNumber: true, email: true } },
+        receiver: { select: { id: true, name: true, avatar: true, phoneNumber: true, email: true } },
+      },
+    })
+
+    return blocked.map(f => f.requesterId === userId ? f.receiver : f.requester)
+  }
+
+  /**
+   * Kiểm tra trạng thái block giữa 2 user
+   * Trả về: null = không có block, hoặc { blockedBy } = ai đang chặn ai
+   */
+  async checkBlockStatus(userA: number, userB: number) {
+    return this.prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: userA, receiverId: userB },
+          { requesterId: userB, receiverId: userA },
+        ],
+        status: 'BLOCKED',
+      },
+      select: { blockerIds: true },
     })
   }
 }

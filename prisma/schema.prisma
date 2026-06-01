@@ -104,6 +104,7 @@ model Friendship {
   receiver    User     @relation("FriendReceivers", fields: [receiverId], references: [id], onDelete: Cascade)
 
   status      FriendshipStatus @default(PENDING) // PENDING, ACCEPTED, BLOCKED
+  blockerIds  Int[]    @default([]) // Danh sách ID những người thực hiện block
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -19,6 +19,12 @@ export const AcceptFriendSchema = z.object({
 })
 export type AcceptFriendBody = z.infer<typeof AcceptFriendSchema>
 
+export const BlockUserSchema = z.object({
+  userId: z.number().positive('ID người dùng không hợp lệ'),
+})
+export type BlockUserBody = z.infer<typeof BlockUserSchema>
+
+
 // ==========================================
 // 2. RESPONSE SCHEMAS
 // ==========================================
