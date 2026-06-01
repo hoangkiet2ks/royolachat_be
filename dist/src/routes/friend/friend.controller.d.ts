@@ -1,5 +1,5 @@
 import { FriendService } from './friend.service';
-import { type SearchUserBody, type AddFriendBody, type AcceptFriendBody } from './friend.model';
+import { type SearchUserBody, type AddFriendBody, type AcceptFriendBody, type BlockUserBody } from './friend.model';
 export declare class FriendController {
     private friendService;
     constructor(friendService: FriendService);
@@ -38,6 +38,7 @@ export declare class FriendController {
             updatedAt: Date;
             requesterId: number;
             receiverId: number;
+            blockerIds: number[];
         };
         error: null;
     }>;
@@ -65,6 +66,7 @@ export declare class FriendController {
             updatedAt: Date;
             requesterId: number;
             receiverId: number;
+            blockerIds: number[];
         };
         error: null;
     }>;
@@ -101,6 +103,7 @@ export declare class FriendController {
             updatedAt: Date;
             requesterId: number;
             receiverId: number;
+            blockerIds: number[];
         })[];
         error: null;
     }>;
@@ -111,6 +114,40 @@ export declare class FriendController {
         data: {
             message: string;
         };
+        error: null;
+    }>;
+    blockUser(activeUser: any, body: BlockUserBody): Promise<{
+        success: boolean;
+        data: {
+            message: string;
+        };
+        error: null;
+    }>;
+    unblockUser(activeUser: any, body: BlockUserBody): Promise<{
+        success: boolean;
+        data: {
+            message: string;
+        };
+        error: null;
+    }>;
+    getBlockList(activeUser: any): Promise<{
+        success: boolean;
+        data: {
+            id: number;
+            email: string;
+            name: string;
+            phoneNumber: string;
+            avatar: string | null;
+        }[];
+        error: null;
+    }>;
+    checkBlockStatus(activeUser: any, body: {
+        userId: number;
+    }): Promise<{
+        success: boolean;
+        data: {
+            blockerIds: number[];
+        } | null;
         error: null;
     }>;
 }

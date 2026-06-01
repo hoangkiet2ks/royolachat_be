@@ -85,6 +85,67 @@ const AGENT_TOOLS = [
             },
         },
     },
+    {
+        type: 'function',
+        function: {
+            name: 'search_messages',
+            description: 'Tìm kiếm tin nhắn trong cuộc trò chuyện hiện tại theo từ khóa. Sử dụng khi người dùng muốn tìm tin nhắn cũ, ví dụ: "tìm tin nhắn về...", "xem lại tin nhắn về...", "có tin nhắn nào về..."',
+            parameters: {
+                type: 'object',
+                properties: {
+                    keyword: { type: 'string', description: 'Từ khóa để tìm kiếm tin nhắn. Ví dụ: "sinh nhật", "meeting", "tiền"' },
+                    limit: { type: 'number', description: 'Số lượng tin nhắn tối đa muốn trả về. Mặc định là 10.' },
+                },
+                required: ['keyword'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'translate_text',
+            description: 'Dịch văn bản sang ngôn ngữ khác. Sử dụng khi người dùng muốn dịch một đoạn text, ví dụ: "dịch sang tiếng Anh", "translate to Korean", "câu này nghĩa là gì"',
+            parameters: {
+                type: 'object',
+                properties: {
+                    text: { type: 'string', description: 'Văn bản cần dịch' },
+                    target_language: { type: 'string', description: 'Ngôn ngữ đích cần dịch sang. Ví dụ: "English", "Korean", "Japanese", "Chinese", "French", "Vietnamese"' },
+                    source_language: { type: 'string', description: 'Ngôn ngữ nguồn (nếu biết). Ví dụ: "Vietnamese", "English". Nếu không biết thì để trống.' },
+                },
+                required: ['text', 'target_language'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'analyze_image',
+            description: 'Phân tích hình ảnh (mô tả nội dung, đọc text trong ảnh OCR, nhận diện vật thể). Sử dụng khi người dùng gửi ảnh và muốn AI mô tả, đọc text trong ảnh, hoặc phân tích nội dung ảnh.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    image_url: { type: 'string', description: 'URL đầy đủ của hình ảnh cần phân tích. Ví dụ: "https://example.com/image.jpg"' },
+                    task: { type: 'string', description: 'Loại phân tích: "describe" (mô tả ảnh), "ocr" (đọc text trong ảnh), "analyze" (phân tích chi tiết)' },
+                },
+                required: ['image_url', 'task'],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'create_group_chat',
+            description: 'Tạo một nhóm chat mới với các thành viên được chỉ định. Sử dụng khi người dùng yêu cầu tạo nhóm mới.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    group_name: { type: 'string', description: 'Tên nhóm chat muốn tạo' },
+                    member_names: { type: 'array', items: { type: 'string' }, description: 'Danh sách tên các thành viên cần thêm vào nhóm (không cần thêm chính mình)' },
+                },
+                required: ['group_name', 'member_names'],
+            },
+        },
+    },
 ];
 let AiService = class AiService {
     constructor(prisma) {
@@ -196,8 +257,16 @@ let AiService = class AiService {
                 ``,
                 `QUY TẮC NGÔN NGỮ TỐI THƯỢNG: BẠN BẮT BUỘC PHẢI LUÔN LUÔN trả lời bằng tiếng Việt có dấu chuẩn xác, định dạng rõ ràng, tự nhiên.`,
                 ``,
+                `Các Hàm (Tools) bạn có thể sử dụng:`,
+                `  - get_friend_list: Lấy danh sách bạn bè của người dùng`,
+                `  - open_chat_room: Mở cuộc trò chuyện với một người bạn cụ thể`,
+                `  - create_group_chat: Tạo nhóm chat mới với các thành viên`,
+                `  - search_messages: Tìm kiếm tin nhắn trong cuộc trò chuyện hiện tại theo từ khóa`,
+                `  - translate_text: Dịch văn bản sang ngôn ngữ khác`,
+                `  - analyze_image: Phân tích/mô tả hình ảnh hoặc đọc text trong ảnh (OCR)`,
+                ``,
                 `Quy tắc Gọi Hàm (Strict Rules):`,
-                `CHỈ gọi hàm khi người dùng yêu cầu hành động cụ thể (ví dụ: "mở chat với X", "tạo nhóm", "tôi có bao nhiêu bạn bè").`,
+                `CHỈ gọi hàm khi người dùng yêu cầu hành động cụ thể (ví dụ: "mở chat với X", "tìm tin nhắn về Y", "dịch câu này sang tiếng Anh", "phân tích ảnh này").`,
                 `NẾU người dùng hỏi các câu hỏi hướng dẫn sử dụng (FAQ), TUYỆT ĐỐI KHÔNG kích hoạt tool. Hãy trả lời dựa trên Cẩm nang sau:`,
                 ``,
                 `CẨM NANG HƯỚNG DẪN (Không gọi tool khi hỏi các câu này):`,
@@ -340,6 +409,130 @@ let AiService = class AiService {
                             }
                         }
                     }
+                    else if (toolName === 'search_messages') {
+                        try {
+                            let args = {};
+                            try {
+                                args = JSON.parse(toolCall.function.arguments);
+                            }
+                            catch { }
+                            const keyword = args.keyword || '';
+                            const limit = Math.min(args.limit || 10, 20);
+                            const msgs = await this.prisma.message.findMany({
+                                where: {
+                                    conversationId,
+                                    type: 'TEXT',
+                                    isRecalled: false,
+                                    content: { contains: keyword, mode: 'insensitive' },
+                                },
+                                orderBy: { createdAt: 'desc' },
+                                take: limit,
+                                include: { sender: { select: { name: true } } },
+                            });
+                            if (msgs.length === 0) {
+                                toolResult = JSON.stringify({ found: 0, messages: [], message: `Khong tim thay tin nhan nao chua tu khoa "${keyword}"` });
+                            }
+                            else {
+                                const results = msgs.map(m => ({
+                                    sender: m.sender.name,
+                                    content: m.content,
+                                    time: m.createdAt.toISOString(),
+                                }));
+                                toolResult = JSON.stringify({
+                                    found: msgs.length,
+                                    messages: results,
+                                    message: `Tim thay ${msgs.length} tin nhan chua "${keyword}": ${results.slice(0, 3).map(m => `"${m.content?.slice(0, 50)}..."`).join(', ')}${results.length > 3 ? '...' : ''}`,
+                                });
+                            }
+                        }
+                        catch (e) {
+                            toolResult = JSON.stringify({ error: 'Không thể tìm kiếm tin nhắn lúc này.' });
+                        }
+                    }
+                    else if (toolName === 'translate_text') {
+                        try {
+                            let args = {};
+                            try {
+                                args = JSON.parse(toolCall.function.arguments);
+                            }
+                            catch { }
+                            const text = args.text || '';
+                            const targetLang = args.target_language || 'English';
+                            const sourceLang = args.source_language || '';
+                            const systemPrompt = sourceLang
+                                ? `You are a professional translator. Translate the following text from ${sourceLang} to ${targetLang}. Only return the translated text, nothing else.`
+                                : `You are a professional translator. Detect the source language and translate to ${targetLang}. Only return the translated text, nothing else.`;
+                            const result = await Promise.race([
+                                this.groq.chat.completions.create({
+                                    model: this.MODEL,
+                                    messages: [
+                                        { role: 'system', content: systemPrompt },
+                                        { role: 'user', content: text },
+                                    ],
+                                    max_tokens: 2048,
+                                }),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 15000)),
+                            ]);
+                            const translated = result.choices[0]?.message?.content?.trim() || '';
+                            toolResult = JSON.stringify({
+                                original: text,
+                                translated,
+                                source_language: sourceLang || 'auto-detected',
+                                target_language: targetLang,
+                                message: `Dịch sang ${targetLang}: "${translated.slice(0, 200)}${translated.length > 200 ? '...' : ''}"`,
+                            });
+                        }
+                        catch (e) {
+                            toolResult = JSON.stringify({ error: 'Không thể dịch văn bản lúc này.' });
+                        }
+                    }
+                    else if (toolName === 'analyze_image') {
+                        try {
+                            let args = {};
+                            try {
+                                args = JSON.parse(toolCall.function.arguments);
+                            }
+                            catch { }
+                            const imageUrl = args.image_url || '';
+                            const task = args.task || 'describe';
+                            if (!imageUrl) {
+                                toolResult = JSON.stringify({ error: 'Vui long cung cap URL hinh anh.' });
+                            }
+                            else {
+                                const analysisPrompt = task === 'ocr'
+                                    ? 'Đọc tất cả text có trong hình ảnh này. Trả về chính xác các đoạn text bạn nhìn thấy.'
+                                    : task === 'analyze'
+                                        ? 'Phân tích chi tiết hình ảnh này: mô tả nội dung, đối tượng, hoàn cảnh, màu sắc, và bất kỳ chi tiết đáng chú ý nào.'
+                                        : 'Mô tả ngắn gọn hình ảnh này trong 1-2 câu.';
+                                const result = await Promise.race([
+                                    this.groq.chat.completions.create({
+                                        model: 'llama-3.2-11b-vision-preview',
+                                        messages: [
+                                            {
+                                                role: 'user',
+                                                content: [
+                                                    { type: 'text', text: analysisPrompt },
+                                                    { type: 'image_url', image_url: { url: imageUrl } },
+                                                ],
+                                            },
+                                        ],
+                                        max_tokens: 1024,
+                                    }),
+                                    new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 30000)),
+                                ]);
+                                const analysis = result.choices[0]?.message?.content?.trim() || '';
+                                const taskLabel = task === 'ocr' ? 'Text trong ảnh' : task === 'analyze' ? 'Phân tích chi tiết' : 'Mô tả ảnh';
+                                toolResult = JSON.stringify({
+                                    task,
+                                    analysis,
+                                    message: `${taskLabel}: ${analysis.slice(0, 300)}${analysis.length > 300 ? '...' : ''}`,
+                                });
+                            }
+                        }
+                        catch (e) {
+                            toolResult = JSON.stringify({ error: 'Không thể phân tích hình ảnh lúc này. Có thể ảnh không hợp lệ hoặc URL không truy cập được.' });
+                        }
+                    }
                     else {
                         toolResult = JSON.stringify({ error: `Tool "${toolName}" khong duoc ho tro` });
                     }
@@ -410,6 +603,42 @@ let AiService = class AiService {
                     responseText = await this.callGeminiRaw(`Tu doan hoi thoai sau, hay trich xuat tat ca cac cau giao viec, nguoi duoc giao va deadline (neu co). Tra ve dang danh sach ro rang bang tieng Viet:\n\n${chatText}`, 30000);
                 }
             }
+            else if (intent === 'analyze_image') {
+                const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+                const recentImage = await this.prisma.message.findFirst({
+                    where: {
+                        conversationId,
+                        senderId: userId,
+                        type: 'IMAGE',
+                        fileUrl: { not: null },
+                        isRecalled: false,
+                        createdAt: { gte: oneHourAgo },
+                    },
+                    orderBy: { createdAt: 'desc' },
+                });
+                if (!recentImage || !recentImage.fileUrl) {
+                    responseText = 'Khong tim thay anh nao gan day trong cuoc tro chuyen. Vui long gui anh truoc, sau do moi yeu cau phan tich.';
+                }
+                else {
+                    let task = 'analyze';
+                    if (/doc?|text|text|chữ|đọc|trích xuất/i.test(question)) {
+                        task = 'ocr';
+                    }
+                    else if (/mô tả|describe|what is|đây là|ảnh này là/i.test(question)) {
+                        task = 'describe';
+                    }
+                    server.to(roomName).emit('botTyping', { conversationId });
+                    await this.processGroupImageAnalysis({
+                        conversationId,
+                        imageUrl: recentImage.fileUrl,
+                        task,
+                        userId,
+                        userName: '',
+                        server,
+                    });
+                    return;
+                }
+            }
             else {
                 responseText = await this.callGeminiRaw(question, 30000);
             }
@@ -420,6 +649,60 @@ let AiService = class AiService {
             this.logCall(userId, 'group_mention', 'fail', { conversationId });
             console.error('[AiService] processGroupMention exception:', err.message);
             server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, 'Royola Bot hien khong kha dung, vui long thu lai sau.'));
+        }
+        finally {
+            server.to(roomName).emit('botTypingStop', { conversationId });
+        }
+    }
+    async processGroupImageAnalysis(params) {
+        const { conversationId, imageUrl, task, userId, userName, server } = params;
+        const roomName = `conversation_${conversationId}`;
+        try {
+            if (!(await this.checkRateLimit(userId))) {
+                this.logCall(userId, 'group_mention', 'rate_limited', { conversationId });
+                server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, 'Ban da dat gioi han su dung AI. Vui long thu lai sau 1 gio.'));
+                return;
+            }
+            await this.recordRequest(userId);
+            this.logCall(userId, 'group_mention', 'start', { conversationId, intent: 'image_analysis' });
+            let displayName = userName;
+            if (!displayName) {
+                const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+                displayName = user?.name || 'Người dùng';
+            }
+            const taskLabel = task === 'ocr' ? 'đọc text trong ảnh' : task === 'analyze' ? 'phân tích chi tiết ảnh' : 'mô tả ảnh';
+            const analysisPrompt = task === 'ocr'
+                ? 'Đọc tất cả text có trong hình ảnh này. Trả về chính xác các đoạn text bạn nhìn thấy.'
+                : task === 'analyze'
+                    ? 'Phân tích chi tiết hình ảnh này: mô tả nội dung, đối tượng, hoàn cảnh, màu sắc, và bất kỳ chi tiết đáng chú ý nào.'
+                    : 'Mô tả ngắn gọn hình ảnh này trong 1-2 câu.';
+            if (!this.groq)
+                throw new Error('Groq API not configured');
+            const result = await Promise.race([
+                this.groq.chat.completions.create({
+                    model: 'llama-3.2-11b-vision-preview',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: [
+                                { type: 'text', text: `Người dùng "${displayName}" yêu cầu ${taskLabel}. ${analysisPrompt}` },
+                                { type: 'image_url', image_url: { url: imageUrl } },
+                            ],
+                        },
+                    ],
+                    max_tokens: 1024,
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 30000)),
+            ]);
+            const analysis = result.choices[0]?.message?.content?.trim() || '';
+            const responseText = analysis || 'Không thể phân tích hình ảnh này.';
+            this.logCall(userId, 'group_mention', 'success', { conversationId });
+            server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, responseText));
+        }
+        catch (err) {
+            this.logCall(userId, 'group_mention', 'fail', { conversationId });
+            console.error('[AiService] processGroupImageAnalysis exception:', err.message);
+            server.to(roomName).emit('newMessage', await this.saveBotMessage(conversationId, 'Royola Bot khong the phan tich anh nay. Vui long thu lai.'));
         }
         finally {
             server.to(roomName).emit('botTypingStop', { conversationId });
@@ -472,6 +755,8 @@ let AiService = class AiService {
             return 'summarize';
         if (/\btask\b|cong viec|giao viec|danh sach viec|todo/.test(lower))
             return 'task';
+        if (/phan tich|analyze|mô tả|describe|đọc text|doc?|what is|đây là|ảnh này|trong ảnh|anh nay|trong anh/i.test(lower))
+            return 'analyze_image';
         return 'qa';
     }
     sanitizeResponse(text) {

@@ -118,6 +118,14 @@ export declare class AuthService {
         birthday: Date | null;
         is2FAEnabled: boolean;
     }>;
+    getUserProfile(userId: number): Promise<{
+        name: string;
+        avatar: string | null;
+        banner: string | null;
+        phoneNumber: string;
+        email: string;
+        birthday: Date | null;
+    }>;
     updateProfile(userId: number, name: string): Promise<{
         message: string;
         name: string;

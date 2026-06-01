@@ -301,6 +301,19 @@ let AuthService = class AuthService {
             is2FAEnabled: !!user.totpSecret,
         };
     }
+    async getUserProfile(userId) {
+        const user = await this.authRepository.findUniqueUser({ id: userId });
+        if (!user)
+            throw auth_error_1.EmailNotFoundException;
+        return {
+            name: user.name,
+            avatar: user.avatar,
+            banner: user.banner,
+            phoneNumber: user.phoneNumber,
+            email: user.email,
+            birthday: user.birthday,
+        };
+    }
     async updateProfile(userId, name) {
         if (!name || name.trim().length === 0) {
             throw new common_1.HttpException('Tên không được để trống', 400);

@@ -85,6 +85,7 @@ export declare const FriendshipScalarFieldEnum: {
     readonly requesterId: "requesterId";
     readonly receiverId: "receiverId";
     readonly status: "status";
+    readonly blockerIds: "blockerIds";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };

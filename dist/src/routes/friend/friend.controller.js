@@ -82,6 +82,38 @@ let FriendController = class FriendController {
             error: null,
         };
     }
+    async blockUser(activeUser, body) {
+        const result = await this.friendService.blockUser(activeUser.userId, body);
+        return {
+            success: true,
+            data: result,
+            error: null,
+        };
+    }
+    async unblockUser(activeUser, body) {
+        const result = await this.friendService.unblockUser(activeUser.userId, body);
+        return {
+            success: true,
+            data: result,
+            error: null,
+        };
+    }
+    async getBlockList(activeUser) {
+        const blocked = await this.friendService.getBlockList(activeUser.userId);
+        return {
+            success: true,
+            data: blocked,
+            error: null,
+        };
+    }
+    async checkBlockStatus(activeUser, body) {
+        const result = await this.friendService.checkBlockStatus(activeUser.userId, body.userId);
+        return {
+            success: true,
+            data: result,
+            error: null,
+        };
+    }
 };
 exports.FriendController = FriendController;
 __decorate([
@@ -138,6 +170,37 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], FriendController.prototype, "removeFriend", null);
+__decorate([
+    (0, common_1.Post)('block'),
+    __param(0, (0, active_user_decorator_1.ActiveUser)()),
+    __param(1, (0, common_1.Body)(new custom_zod_validation_pipe_1.default(friend_model_1.BlockUserSchema))),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], FriendController.prototype, "blockUser", null);
+__decorate([
+    (0, common_1.Post)('unblock'),
+    __param(0, (0, active_user_decorator_1.ActiveUser)()),
+    __param(1, (0, common_1.Body)(new custom_zod_validation_pipe_1.default(friend_model_1.BlockUserSchema))),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], FriendController.prototype, "unblockUser", null);
+__decorate([
+    (0, common_1.Get)('blocked'),
+    __param(0, (0, active_user_decorator_1.ActiveUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FriendController.prototype, "getBlockList", null);
+__decorate([
+    (0, common_1.Post)('block-status'),
+    __param(0, (0, active_user_decorator_1.ActiveUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], FriendController.prototype, "checkBlockStatus", null);
 exports.FriendController = FriendController = __decorate([
     (0, common_1.Controller)('friend'),
     (0, common_1.UseGuards)(access_token_guard_1.AccessTokenGuard),

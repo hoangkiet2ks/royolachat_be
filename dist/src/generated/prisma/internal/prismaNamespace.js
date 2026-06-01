@@ -128,6 +128,7 @@ exports.FriendshipScalarFieldEnum = {
     requesterId: 'requesterId',
     receiverId: 'receiverId',
     status: 'status',
+    blockerIds: 'blockerIds',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };

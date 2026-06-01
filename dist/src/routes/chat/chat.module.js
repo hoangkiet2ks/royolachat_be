@@ -14,12 +14,13 @@ const chat_controller_1 = require("./chat.controller");
 const prisma_service_1 = require("../../shared/services/prisma.service");
 const jwt_1 = require("@nestjs/jwt");
 const ai_module_1 = require("../ai/ai.module");
+const friend_module_1 = require("../friend/friend.module");
 let ChatModule = class ChatModule {
 };
 exports.ChatModule = ChatModule;
 exports.ChatModule = ChatModule = __decorate([
     (0, common_1.Module)({
-        imports: [jwt_1.JwtModule.register({}), ai_module_1.AiModule],
+        imports: [jwt_1.JwtModule.register({}), ai_module_1.AiModule, (0, common_1.forwardRef)(() => friend_module_1.FriendModule)],
         controllers: [chat_controller_1.ChatController],
         providers: [chat_gateway_1.ChatGateway, chat_service_1.ChatService, prisma_service_1.PrismaService],
         exports: [chat_gateway_1.ChatGateway],

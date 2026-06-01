@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ListFriendResSchema = exports.AddFriendResSchema = exports.SearchUserResSchema = exports.FriendshipSchema = exports.UserProfileSchema = exports.AcceptFriendSchema = exports.AddFriendSchema = exports.SearchUserSchema = void 0;
+exports.ListFriendResSchema = exports.AddFriendResSchema = exports.SearchUserResSchema = exports.FriendshipSchema = exports.UserProfileSchema = exports.BlockUserSchema = exports.AcceptFriendSchema = exports.AddFriendSchema = exports.SearchUserSchema = void 0;
 const zod_1 = require("zod");
 exports.SearchUserSchema = zod_1.z.object({
     phoneNumber: zod_1.z.string().min(1, 'Số điện thoại không được trống'),
@@ -10,6 +10,9 @@ exports.AddFriendSchema = zod_1.z.object({
 });
 exports.AcceptFriendSchema = zod_1.z.object({
     requesterId: zod_1.z.number().positive('ID người gửi lời mời không hợp lệ'),
+});
+exports.BlockUserSchema = zod_1.z.object({
+    userId: zod_1.z.number().positive('ID người dùng không hợp lệ'),
 });
 exports.UserProfileSchema = zod_1.z.object({
     id: zod_1.z.number(),

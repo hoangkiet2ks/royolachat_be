@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@nestjs/common';
 import Groq from 'groq-sdk';
 import { PrismaService } from '../../shared/services/prisma.service';
-import axios from 'axios';
 
 // ============================================================
 // Pure utility functions

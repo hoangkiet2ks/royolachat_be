@@ -394,13 +394,6 @@ export type MessageNullableScalarRelationFilter = {
     is?: Prisma.MessageWhereInput | null;
     isNot?: Prisma.MessageWhereInput | null;
 };
-export type IntNullableListFilter<$PrismaModel = never> = {
-    equals?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null;
-    has?: number | Prisma.IntFieldRefInput<$PrismaModel> | null;
-    hasEvery?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
-    hasSome?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
-    isEmpty?: boolean;
-};
 export type MessageCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     content?: Prisma.SortOrder;

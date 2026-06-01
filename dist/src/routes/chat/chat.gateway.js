@@ -18,11 +18,13 @@ const socket_io_1 = require("socket.io");
 const chat_service_1 = require("./chat.service");
 const jwt_1 = require("@nestjs/jwt");
 const ai_service_1 = require("../ai/ai.service");
+const friend_repo_1 = require("../friend/friend.repo");
 let ChatGateway = class ChatGateway {
-    constructor(chatService, jwtService, aiService) {
+    constructor(chatService, jwtService, aiService, friendRepo) {
         this.chatService = chatService;
         this.jwtService = jwtService;
         this.aiService = aiService;
+        this.friendRepo = friendRepo;
         this.userSockets = new Map();
         this.activeCallParticipants = new Map();
     }
@@ -82,6 +84,17 @@ let ChatGateway = class ChatGateway {
             const userId = Number(client.data.userId);
             if (!userId || isNaN(userId))
                 throw new Error('Chưa xác thực');
+            const convInfo = await this.chatService.getConversationInfo(payload.conversationId, userId);
+            if (convInfo && !convInfo.isGroup && convInfo.partnerId) {
+                const blockStatus = await this.friendRepo.checkBlockStatus(userId, convInfo.partnerId);
+                if (blockStatus) {
+                    client.emit('error:blocked', {
+                        conversationId: payload.conversationId,
+                        blockerIds: blockStatus.blockerIds,
+                    });
+                    return { status: 'error', message: 'Không thể gửi tin nhắn' };
+                }
+            }
             const savedMessage = await this.chatService.saveMessage({
                 senderId: userId,
                 conversationId: payload.conversationId,
@@ -155,6 +168,33 @@ let ChatGateway = class ChatGateway {
             return { status: 'error', message: 'Không thể gửi tin nhắn' };
         }
     }
+    async handleAnalyzeGroupImage(client, payload) {
+        try {
+            const userId = Number(client.data.userId);
+            if (!userId || isNaN(userId)) {
+                return { status: 'error', message: 'Chưa xác thực' };
+            }
+            if (!this.aiService.checkGroupRateLimit(payload.conversationId)) {
+                return { status: 'rate_limited', message: 'Bot đang xử lý, vui lòng đợi 3 giây.' };
+            }
+            this.aiService.recordGroupRequest(payload.conversationId);
+            this.server.to(`conversation_${payload.conversationId}`).emit('botTyping', { conversationId: payload.conversationId });
+            setImmediate(() => {
+                this.aiService.processGroupImageAnalysis({
+                    conversationId: payload.conversationId,
+                    imageUrl: payload.imageUrl,
+                    task: payload.task || 'describe',
+                    userId,
+                    server: this.server,
+                }).catch(err => console.error('[Gateway] processGroupImageAnalysis error:', err));
+            });
+            return { status: 'success' };
+        }
+        catch (error) {
+            console.error('[Gateway] analyzeGroupImage error:', error);
+            return { status: 'error', message: 'Không thể phân tích ảnh' };
+        }
+    }
     handleCheckOnlineStatus(client, partnerId) {
         const isOnline = this.userSockets.has(partnerId) && (this.userSockets.get(partnerId)?.length || 0) > 0;
         client.emit('statusAnswer', { partnerId, isOnline });
@@ -222,6 +262,16 @@ let ChatGateway = class ChatGateway {
         }
         else {
             console.log(`[Call 1-1] User ${callerId} gọi ${payload.targetUserId}`);
+            if (payload.targetUserId) {
+                const blockStatus = await this.friendRepo.checkBlockStatus(callerId, payload.targetUserId);
+                if (blockStatus) {
+                    client.emit('call:blocked', {
+                        targetUserId: payload.targetUserId,
+                        blockerIds: blockStatus.blockerIds,
+                    });
+                    return;
+                }
+            }
             const targetSockets = this.userSockets.get(payload.targetUserId);
             if (!targetSockets || targetSockets.length === 0) {
                 return client.emit('call:unavailable', { targetUserId: payload.targetUserId });
@@ -370,6 +420,18 @@ let ChatGateway = class ChatGateway {
             console.log(`[Friend] Sent friend request notification to user ${receiverId} from ${requester.name}`);
         }
     }
+    notifyBlocked(targetId, blockerId) {
+        const sockets = this.userSockets.get(targetId);
+        sockets?.forEach(socketId => {
+            this.server.to(socketId).emit('friend:blocked', { blockedBy: blockerId });
+        });
+    }
+    notifyUnblocked(targetId, unblockerId) {
+        const sockets = this.userSockets.get(targetId);
+        sockets?.forEach(socketId => {
+            this.server.to(socketId).emit('friend:unblocked', { unblockedBy: unblockerId });
+        });
+    }
     async handleTogglePin(client, payload) {
         try {
             const userId = client.data.userId;
@@ -450,6 +512,14 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "handleMessage", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('analyzeGroupImage'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "handleAnalyzeGroupImage", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('checkOnlineStatus'),
     __param(0, (0, websockets_1.ConnectedSocket)()),
@@ -600,6 +670,7 @@ exports.ChatGateway = ChatGateway = __decorate([
     }),
     __metadata("design:paramtypes", [chat_service_1.ChatService,
         jwt_1.JwtService,
-        ai_service_1.AiService])
+        ai_service_1.AiService,
+        friend_repo_1.FriendRepository])
 ], ChatGateway);
 //# sourceMappingURL=chat.gateway.js.map

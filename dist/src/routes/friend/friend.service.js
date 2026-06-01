@@ -56,6 +56,9 @@ let FriendService = class FriendService {
             if (existing.status === 'PENDING') {
                 throw new common_1.BadRequestException('Đã gửi lời mời rồi');
             }
+            if (existing.status === 'BLOCKED') {
+                throw new common_1.BadRequestException('Không thể kết bạn với người dùng này');
+            }
         }
         const friendship = await this.friendRepo.createFriendRequest(userId, body.receiverId);
         const requester = await this.friendRepo.findUserById(userId);
@@ -107,6 +110,36 @@ let FriendService = class FriendService {
         }
         await this.friendRepo.deleteFriendship(userId, friendId);
         return { message: 'Đã xóa bạn bè thành công' };
+    }
+    async blockUser(userId, body) {
+        if (userId === body.userId) {
+            throw new common_1.BadRequestException('Không thể chặn chính mình');
+        }
+        const target = await this.friendRepo.findUserById(body.userId);
+        if (!target) {
+            throw new common_1.NotFoundException('Người dùng không tồn tại');
+        }
+        const existing = await this.friendRepo.checkBlockStatus(userId, body.userId);
+        if (existing && existing.blockerIds.includes(userId)) {
+            throw new common_1.BadRequestException('Bạn đã chặn người này rồi');
+        }
+        await this.friendRepo.blockUser(userId, body.userId);
+        this.chatGateway.notifyBlocked(body.userId, userId);
+        return { message: 'Đã chặn người dùng thành công' };
+    }
+    async unblockUser(userId, body) {
+        if (userId === body.userId) {
+            throw new common_1.BadRequestException('Không thể bỏ chặn chính mình');
+        }
+        await this.friendRepo.unblockUser(userId, body.userId);
+        this.chatGateway.notifyUnblocked(body.userId, userId);
+        return { message: 'Đã bỏ chặn người dùng thành công' };
+    }
+    async getBlockList(userId) {
+        return this.friendRepo.getBlockList(userId);
+    }
+    async checkBlockStatus(userA, userB) {
+        return this.friendRepo.checkBlockStatus(userA, userB);
     }
 };
 exports.FriendService = FriendService;

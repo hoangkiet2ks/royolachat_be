@@ -13,11 +13,13 @@ export type FriendshipAvgAggregateOutputType = {
     id: number | null;
     requesterId: number | null;
     receiverId: number | null;
+    blockerIds: number | null;
 };
 export type FriendshipSumAggregateOutputType = {
     id: number | null;
     requesterId: number | null;
     receiverId: number | null;
+    blockerIds: number[];
 };
 export type FriendshipMinAggregateOutputType = {
     id: number | null;
@@ -40,6 +42,7 @@ export type FriendshipCountAggregateOutputType = {
     requesterId: number;
     receiverId: number;
     status: number;
+    blockerIds: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
@@ -48,11 +51,13 @@ export type FriendshipAvgAggregateInputType = {
     id?: true;
     requesterId?: true;
     receiverId?: true;
+    blockerIds?: true;
 };
 export type FriendshipSumAggregateInputType = {
     id?: true;
     requesterId?: true;
     receiverId?: true;
+    blockerIds?: true;
 };
 export type FriendshipMinAggregateInputType = {
     id?: true;
@@ -75,6 +80,7 @@ export type FriendshipCountAggregateInputType = {
     requesterId?: true;
     receiverId?: true;
     status?: true;
+    blockerIds?: true;
     createdAt?: true;
     updatedAt?: true;
     _all?: true;
@@ -112,6 +118,7 @@ export type FriendshipGroupByOutputType = {
     requesterId: number;
     receiverId: number;
     status: $Enums.FriendshipStatus;
+    blockerIds: number[];
     createdAt: Date;
     updatedAt: Date;
     _count: FriendshipCountAggregateOutputType | null;
@@ -131,6 +138,7 @@ export type FriendshipWhereInput = {
     requesterId?: Prisma.IntFilter<"Friendship"> | number;
     receiverId?: Prisma.IntFilter<"Friendship"> | number;
     status?: Prisma.EnumFriendshipStatusFilter<"Friendship"> | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.IntNullableListFilter<"Friendship">;
     createdAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
     requester?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
@@ -141,6 +149,7 @@ export type FriendshipOrderByWithRelationInput = {
     requesterId?: Prisma.SortOrder;
     receiverId?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
+    blockerIds?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     requester?: Prisma.UserOrderByWithRelationInput;
@@ -155,6 +164,7 @@ export type FriendshipWhereUniqueInput = Prisma.AtLeast<{
     requesterId?: Prisma.IntFilter<"Friendship"> | number;
     receiverId?: Prisma.IntFilter<"Friendship"> | number;
     status?: Prisma.EnumFriendshipStatusFilter<"Friendship"> | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.IntNullableListFilter<"Friendship">;
     createdAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
     requester?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
@@ -165,6 +175,7 @@ export type FriendshipOrderByWithAggregationInput = {
     requesterId?: Prisma.SortOrder;
     receiverId?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
+    blockerIds?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     _count?: Prisma.FriendshipCountOrderByAggregateInput;
@@ -181,11 +192,13 @@ export type FriendshipScalarWhereWithAggregatesInput = {
     requesterId?: Prisma.IntWithAggregatesFilter<"Friendship"> | number;
     receiverId?: Prisma.IntWithAggregatesFilter<"Friendship"> | number;
     status?: Prisma.EnumFriendshipStatusWithAggregatesFilter<"Friendship"> | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.IntNullableListFilter<"Friendship">;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Friendship"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Friendship"> | Date | string;
 };
 export type FriendshipCreateInput = {
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
     requester: Prisma.UserCreateNestedOneWithoutFriendRequestsSentInput;
@@ -196,11 +209,13 @@ export type FriendshipUncheckedCreateInput = {
     requesterId: number;
     receiverId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
 export type FriendshipUpdateInput = {
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     requester?: Prisma.UserUpdateOneRequiredWithoutFriendRequestsSentNestedInput;
@@ -211,6 +226,7 @@ export type FriendshipUncheckedUpdateInput = {
     requesterId?: Prisma.IntFieldUpdateOperationsInput | number;
     receiverId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -219,11 +235,13 @@ export type FriendshipCreateManyInput = {
     requesterId: number;
     receiverId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
 export type FriendshipUpdateManyMutationInput = {
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -232,6 +250,7 @@ export type FriendshipUncheckedUpdateManyInput = {
     requesterId?: Prisma.IntFieldUpdateOperationsInput | number;
     receiverId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -243,6 +262,13 @@ export type FriendshipListRelationFilter = {
 export type FriendshipOrderByRelationAggregateInput = {
     _count?: Prisma.SortOrder;
 };
+export type IntNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null;
+    has?: number | Prisma.IntFieldRefInput<$PrismaModel> | null;
+    hasEvery?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
+    hasSome?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
+    isEmpty?: boolean;
+};
 export type FriendshipRequesterIdReceiverIdCompoundUniqueInput = {
     requesterId: number;
     receiverId: number;
@@ -252,6 +278,7 @@ export type FriendshipCountOrderByAggregateInput = {
     requesterId?: Prisma.SortOrder;
     receiverId?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
+    blockerIds?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -259,6 +286,7 @@ export type FriendshipAvgOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     requesterId?: Prisma.SortOrder;
     receiverId?: Prisma.SortOrder;
+    blockerIds?: Prisma.SortOrder;
 };
 export type FriendshipMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
@@ -280,6 +308,7 @@ export type FriendshipSumOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     requesterId?: Prisma.SortOrder;
     receiverId?: Prisma.SortOrder;
+    blockerIds?: Prisma.SortOrder;
 };
 export type FriendshipCreateNestedManyWithoutRequesterInput = {
     create?: Prisma.XOR<Prisma.FriendshipCreateWithoutRequesterInput, Prisma.FriendshipUncheckedCreateWithoutRequesterInput> | Prisma.FriendshipCreateWithoutRequesterInput[] | Prisma.FriendshipUncheckedCreateWithoutRequesterInput[];
@@ -357,11 +386,19 @@ export type FriendshipUncheckedUpdateManyWithoutReceiverNestedInput = {
     updateMany?: Prisma.FriendshipUpdateManyWithWhereWithoutReceiverInput | Prisma.FriendshipUpdateManyWithWhereWithoutReceiverInput[];
     deleteMany?: Prisma.FriendshipScalarWhereInput | Prisma.FriendshipScalarWhereInput[];
 };
+export type FriendshipCreateblockerIdsInput = {
+    set: number[];
+};
 export type EnumFriendshipStatusFieldUpdateOperationsInput = {
     set?: $Enums.FriendshipStatus;
 };
+export type FriendshipUpdateblockerIdsInput = {
+    set?: number[];
+    push?: number | number[];
+};
 export type FriendshipCreateWithoutRequesterInput = {
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
     receiver: Prisma.UserCreateNestedOneWithoutFriendRequestsReceivedInput;
@@ -370,6 +407,7 @@ export type FriendshipUncheckedCreateWithoutRequesterInput = {
     id?: number;
     receiverId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -383,6 +421,7 @@ export type FriendshipCreateManyRequesterInputEnvelope = {
 };
 export type FriendshipCreateWithoutReceiverInput = {
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
     requester: Prisma.UserCreateNestedOneWithoutFriendRequestsSentInput;
@@ -391,6 +430,7 @@ export type FriendshipUncheckedCreateWithoutReceiverInput = {
     id?: number;
     requesterId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -423,6 +463,7 @@ export type FriendshipScalarWhereInput = {
     requesterId?: Prisma.IntFilter<"Friendship"> | number;
     receiverId?: Prisma.IntFilter<"Friendship"> | number;
     status?: Prisma.EnumFriendshipStatusFilter<"Friendship"> | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.IntNullableListFilter<"Friendship">;
     createdAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Friendship"> | Date | string;
 };
@@ -443,6 +484,7 @@ export type FriendshipCreateManyRequesterInput = {
     id?: number;
     receiverId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -450,11 +492,13 @@ export type FriendshipCreateManyReceiverInput = {
     id?: number;
     requesterId: number;
     status?: $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipCreateblockerIdsInput | number[];
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
 export type FriendshipUpdateWithoutRequesterInput = {
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     receiver?: Prisma.UserUpdateOneRequiredWithoutFriendRequestsReceivedNestedInput;
@@ -463,6 +507,7 @@ export type FriendshipUncheckedUpdateWithoutRequesterInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     receiverId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -470,11 +515,13 @@ export type FriendshipUncheckedUpdateManyWithoutRequesterInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     receiverId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type FriendshipUpdateWithoutReceiverInput = {
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     requester?: Prisma.UserUpdateOneRequiredWithoutFriendRequestsSentNestedInput;
@@ -483,6 +530,7 @@ export type FriendshipUncheckedUpdateWithoutReceiverInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     requesterId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -490,6 +538,7 @@ export type FriendshipUncheckedUpdateManyWithoutReceiverInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     requesterId?: Prisma.IntFieldUpdateOperationsInput | number;
     status?: Prisma.EnumFriendshipStatusFieldUpdateOperationsInput | $Enums.FriendshipStatus;
+    blockerIds?: Prisma.FriendshipUpdateblockerIdsInput | number[];
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -498,6 +547,7 @@ export type FriendshipSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
     requesterId?: boolean;
     receiverId?: boolean;
     status?: boolean;
+    blockerIds?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     requester?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
@@ -508,6 +558,7 @@ export type FriendshipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
     requesterId?: boolean;
     receiverId?: boolean;
     status?: boolean;
+    blockerIds?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     requester?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
@@ -518,6 +569,7 @@ export type FriendshipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
     requesterId?: boolean;
     receiverId?: boolean;
     status?: boolean;
+    blockerIds?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     requester?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
@@ -528,10 +580,11 @@ export type FriendshipSelectScalar = {
     requesterId?: boolean;
     receiverId?: boolean;
     status?: boolean;
+    blockerIds?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type FriendshipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requesterId" | "receiverId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["friendship"]>;
+export type FriendshipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requesterId" | "receiverId" | "status" | "blockerIds" | "createdAt" | "updatedAt", ExtArgs["result"]["friendship"]>;
 export type FriendshipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     requester?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
     receiver?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
@@ -555,6 +608,7 @@ export type $FriendshipPayload<ExtArgs extends runtime.Types.Extensions.Internal
         requesterId: number;
         receiverId: number;
         status: $Enums.FriendshipStatus;
+        blockerIds: number[];
         createdAt: Date;
         updatedAt: Date;
     }, ExtArgs["result"]["friendship"]>;
@@ -620,6 +674,7 @@ export interface FriendshipFieldRefs {
     readonly requesterId: Prisma.FieldRef<"Friendship", 'Int'>;
     readonly receiverId: Prisma.FieldRef<"Friendship", 'Int'>;
     readonly status: Prisma.FieldRef<"Friendship", 'FriendshipStatus'>;
+    readonly blockerIds: Prisma.FieldRef<"Friendship", 'Int[]'>;
     readonly createdAt: Prisma.FieldRef<"Friendship", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Friendship", 'DateTime'>;
 }

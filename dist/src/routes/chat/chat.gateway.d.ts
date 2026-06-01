@@ -3,14 +3,16 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { JwtService } from '@nestjs/jwt';
 import { AiService } from '../ai/ai.service';
+import { FriendRepository } from '../friend/friend.repo';
 export declare class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatService;
     private readonly jwtService;
     private readonly aiService;
+    private readonly friendRepo;
     server: Server;
     private userSockets;
     private activeCallParticipants;
-    constructor(chatService: ChatService, jwtService: JwtService, aiService: AiService);
+    constructor(chatService: ChatService, jwtService: JwtService, aiService: AiService, friendRepo: FriendRepository);
     handleConnection(client: Socket): Promise<void>;
     handleDisconnect(client: Socket): void;
     handleMessage(client: Socket, payload: {
@@ -24,6 +26,10 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
             options: string[];
         };
     }): Promise<{
+        status: string;
+        message: string;
+        data?: undefined;
+    } | {
         status: string;
         data: {
             poll: ({
@@ -84,10 +90,17 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
             isPinned: boolean;
         };
         message?: undefined;
-    } | {
+    }>;
+    handleAnalyzeGroupImage(client: Socket, payload: {
+        conversationId: number;
+        imageUrl: string;
+        task: 'describe' | 'ocr' | 'analyze';
+    }): Promise<{
         status: string;
         message: string;
-        data?: undefined;
+    } | {
+        status: string;
+        message?: undefined;
     }>;
     handleCheckOnlineStatus(client: Socket, partnerId: number): void;
     handleRecallMessage(client: Socket, payload: {
@@ -152,6 +165,8 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
         name: string;
         avatar: string | null;
     }): void;
+    notifyBlocked(targetId: number, blockerId: number): void;
+    notifyUnblocked(targetId: number, unblockerId: number): void;
     handleTogglePin(client: Socket, payload: {
         messageId: number;
         conversationId: number;

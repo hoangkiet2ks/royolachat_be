@@ -114,4 +114,12 @@ export declare class AuthController {
         birthday: Date | null;
         is2FAEnabled: boolean;
     }>;
+    getUserProfile(userId: string, myId: number): Promise<{
+        name: string;
+        avatar: string | null;
+        banner: string | null;
+        phoneNumber: string;
+        email: string;
+        birthday: Date | null;
+    }>;
 }

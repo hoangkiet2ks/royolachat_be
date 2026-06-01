@@ -11,6 +11,10 @@ export declare const AcceptFriendSchema: z.ZodObject<{
     requesterId: z.ZodNumber;
 }, z.core.$strip>;
 export type AcceptFriendBody = z.infer<typeof AcceptFriendSchema>;
+export declare const BlockUserSchema: z.ZodObject<{
+    userId: z.ZodNumber;
+}, z.core.$strip>;
+export type BlockUserBody = z.infer<typeof BlockUserSchema>;
 export declare const UserProfileSchema: z.ZodObject<{
     id: z.ZodNumber;
     name: z.ZodString;

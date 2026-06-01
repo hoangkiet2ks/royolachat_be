@@ -48,7 +48,7 @@ let FriendRepository = class FriendRepository {
                     { requesterId: receiverId, receiverId: requesterId },
                 ],
             },
-            select: { id: true, status: true },
+            select: { id: true, status: true, blockerIds: true, requesterId: true, receiverId: true },
         });
     }
     async createFriendRequest(requesterId, receiverId) {
@@ -145,6 +145,91 @@ let FriendRepository = class FriendRepository {
                     receiverId: friendship.receiverId,
                 },
             },
+        });
+    }
+    async blockUser(blockerId, targetId) {
+        const existing = await this.prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    { requesterId: blockerId, receiverId: targetId },
+                    { requesterId: targetId, receiverId: blockerId },
+                ],
+            },
+        });
+        if (existing) {
+            const newBlockerIds = existing.blockerIds.includes(blockerId)
+                ? existing.blockerIds
+                : [...existing.blockerIds, blockerId];
+            return this.prisma.friendship.update({
+                where: { id: existing.id },
+                data: { status: 'BLOCKED', blockerIds: newBlockerIds },
+            });
+        }
+        else {
+            return this.prisma.friendship.create({
+                data: {
+                    requesterId: blockerId,
+                    receiverId: targetId,
+                    status: 'BLOCKED',
+                    blockerIds: [blockerId],
+                },
+            });
+        }
+    }
+    async unblockUser(blockerId, targetId) {
+        const existing = await this.prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    { requesterId: blockerId, receiverId: targetId },
+                    { requesterId: targetId, receiverId: blockerId },
+                ],
+                status: 'BLOCKED',
+                blockerIds: { has: blockerId },
+            },
+        });
+        if (!existing) {
+            throw new Error('Không tìm thấy bản ghi chặn người này');
+        }
+        const newBlockerIds = existing.blockerIds.filter(id => id !== blockerId);
+        if (newBlockerIds.length === 0) {
+            return this.prisma.friendship.delete({
+                where: { id: existing.id },
+            });
+        }
+        else {
+            return this.prisma.friendship.update({
+                where: { id: existing.id },
+                data: { blockerIds: newBlockerIds },
+            });
+        }
+    }
+    async getBlockList(userId) {
+        const blocked = await this.prisma.friendship.findMany({
+            where: {
+                status: 'BLOCKED',
+                blockerIds: { has: userId },
+                OR: [
+                    { requesterId: userId },
+                    { receiverId: userId },
+                ],
+            },
+            include: {
+                requester: { select: { id: true, name: true, avatar: true, phoneNumber: true, email: true } },
+                receiver: { select: { id: true, name: true, avatar: true, phoneNumber: true, email: true } },
+            },
+        });
+        return blocked.map(f => f.requesterId === userId ? f.receiver : f.requester);
+    }
+    async checkBlockStatus(userA, userB) {
+        return this.prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    { requesterId: userA, receiverId: userB },
+                    { requesterId: userB, receiverId: userA },
+                ],
+                status: 'BLOCKED',
+            },
+            select: { blockerIds: true },
         });
     }
 };

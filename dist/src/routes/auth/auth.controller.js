@@ -94,6 +94,9 @@ let AuthController = class AuthController {
     getCurrentUser(userId) {
         return this.authService.getCurrentUser(userId);
     }
+    getUserProfile(userId, myId) {
+        return this.authService.getUserProfile(Number(userId));
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -253,6 +256,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getCurrentUser", null);
+__decorate([
+    (0, common_1.Get)('user/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, active_user_decorator_1.ActiveUser)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getUserProfile", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,

@@ -52,6 +52,14 @@ export declare class AiService {
         userId: number;
         server: any;
     }): Promise<void>;
+    processGroupImageAnalysis(params: {
+        conversationId: number;
+        imageUrl: string;
+        task: 'describe' | 'ocr' | 'analyze';
+        userId: number;
+        userName?: string;
+        server: any;
+    }): Promise<void>;
     getSmartReplies(params: {
         messageContent: string;
         userId: number;
