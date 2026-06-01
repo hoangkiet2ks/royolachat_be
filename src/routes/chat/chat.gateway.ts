@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { JwtService } from '@nestjs/jwt';
 import { AiService, isBotMention, extractMentionContent } from '../ai/ai.service';
+import { FriendRepository } from '../friend/friend.repo';
 
 @WebSocketGateway({
   cors: {
@@ -35,6 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
     private readonly aiService: AiService,
+    private readonly friendRepo: FriendRepository,
   ) { }
 
   async handleConnection(client: Socket) {
@@ -106,6 +108,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const userId = Number(client.data.userId);
       if (!userId || isNaN(userId)) throw new Error('Chưa xác thực');
+
+      // 0. Kiểm tra block (chỉ áp dụng cho chat 1-1)
+      const convInfo = await this.chatService.getConversationInfo(payload.conversationId, userId);
+      if (convInfo && !convInfo.isGroup && convInfo.partnerId) {
+        const blockStatus = await this.friendRepo.checkBlockStatus(userId, convInfo.partnerId);
+        if (blockStatus) {
+          // Có block: emit lỗi về sender, không gửi tin nhắn
+          client.emit('error:blocked', {
+            conversationId: payload.conversationId,
+            blockerIds: blockStatus.blockerIds,
+          });
+          return { status: 'error', message: 'Không thể gửi tin nhắn' };
+        }
+      }
 
       // 1. Lưu vào Database
       const savedMessage = await this.chatService.saveMessage({
@@ -190,6 +206,43 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { status: 'error', message: 'Không thể gửi tin nhắn' };
     }
   }
+
+  // HÀM: Phân tích ảnh trong nhóm (khi user reply ảnh với @RoyolaBot)
+  @SubscribeMessage('analyzeGroupImage')
+  async handleAnalyzeGroupImage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { conversationId: number; imageUrl: string; task: 'describe' | 'ocr' | 'analyze' }
+  ) {
+    try {
+      const userId = Number(client.data.userId);
+      if (!userId || isNaN(userId)) {
+        return { status: 'error', message: 'Chưa xác thực' };
+      }
+
+      if (!this.aiService.checkGroupRateLimit(payload.conversationId)) {
+        return { status: 'rate_limited', message: 'Bot đang xử lý, vui lòng đợi 3 giây.' };
+      }
+
+      this.aiService.recordGroupRequest(payload.conversationId);
+      this.server.to(`conversation_${payload.conversationId}`).emit('botTyping', { conversationId: payload.conversationId });
+
+      setImmediate(() => {
+        this.aiService.processGroupImageAnalysis({
+          conversationId: payload.conversationId,
+          imageUrl: payload.imageUrl,
+          task: payload.task || 'describe',
+          userId,
+          server: this.server,
+        }).catch(err => console.error('[Gateway] processGroupImageAnalysis error:', err));
+      });
+
+      return { status: 'success' };
+    } catch (error) {
+      console.error('[Gateway] analyzeGroupImage error:', error);
+      return { status: 'error', message: 'Không thể phân tích ảnh' };
+    }
+  }
+
   // HÀM Trả lời Frontend khi nó hỏi trạng thái của 1 người cụ thể
   @SubscribeMessage('checkOnlineStatus')
   handleCheckOnlineStatus(
@@ -307,6 +360,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       // ---- 1-1 CALL ----
       console.log(`[Call 1-1] User ${callerId} gọi ${payload.targetUserId}`);
+
+      // Kiểm tra block trước khi cho phép gọi
+      if (payload.targetUserId) {
+        const blockStatus = await this.friendRepo.checkBlockStatus(callerId, payload.targetUserId);
+        if (blockStatus) {
+          client.emit('call:blocked', {
+            targetUserId: payload.targetUserId,
+            blockerIds: blockStatus.blockerIds,
+          });
+          return;
+        }
+      }
+
       const targetSockets = this.userSockets.get(payload.targetUserId!);
       if (!targetSockets || targetSockets.length === 0) {
         return client.emit('call:unavailable', { targetUserId: payload.targetUserId });
@@ -519,6 +585,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
       console.log(`[Friend] Sent friend request notification to user ${receiverId} from ${requester.name}`);
     }
+  }
+
+  /**
+   * Thông báo realtime: bạn đã bị chặn bởi blockerId
+   * targetId sẽ nhận event để cập nhật UI
+   */
+  notifyBlocked(targetId: number, blockerId: number) {
+    const sockets = this.userSockets.get(targetId);
+    sockets?.forEach(socketId => {
+      this.server.to(socketId).emit('friend:blocked', { blockedBy: blockerId });
+    });
+  }
+
+  /**
+   * Thông báo realtime: bạn đã được bỏ chặn bởi unblockerId
+   */
+  notifyUnblocked(targetId: number, unblockerId: number) {
+    const sockets = this.userSockets.get(targetId);
+    sockets?.forEach(socketId => {
+      this.server.to(socketId).emit('friend:unblocked', { unblockedBy: unblockerId });
+    });
   }
 
   //Sự kiện 1 người ghim thì cả nhóm đều thấy
