@@ -10,19 +10,19 @@ export declare class RegisterBodyDTO extends RegisterBodyDTO_base {
 }
 declare const RegisterResDTO_base: import("nestjs-zod").ZodDto<import("zod").ZodObject<{
     id: import("zod").ZodNumber;
-    status: import("zod").ZodEnum<{
-        ACTIVE: "ACTIVE";
-        INACTIVE: "INACTIVE";
-        BLOCKED: "BLOCKED";
-    }>;
     email: import("zod").ZodString;
     name: import("zod").ZodString;
+    phoneNumber: import("zod").ZodString;
+    avatar: import("zod").ZodNullable<import("zod").ZodString>;
     appRole: import("zod").ZodEnum<{
         USER: "USER";
         ADMIN: "ADMIN";
     }>;
-    phoneNumber: import("zod").ZodString;
-    avatar: import("zod").ZodNullable<import("zod").ZodString>;
+    status: import("zod").ZodEnum<{
+        BLOCKED: "BLOCKED";
+        ACTIVE: "ACTIVE";
+        INACTIVE: "INACTIVE";
+    }>;
     lastSeenAt: import("zod").ZodNullable<import("zod").ZodDate>;
     createdAt: import("zod").ZodDate;
     updatedAt: import("zod").ZodDate;

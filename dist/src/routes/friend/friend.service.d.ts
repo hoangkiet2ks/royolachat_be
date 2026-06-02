@@ -32,9 +32,9 @@ export declare class FriendService {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     acceptFriend(userId: number, body: AcceptFriendBody): Promise<{
         receiver: {
@@ -56,9 +56,9 @@ export declare class FriendService {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     getFriendList(userId: number): Promise<{
         id: number;
@@ -80,18 +80,18 @@ export declare class FriendService {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     })[]>;
     rejectFriend(userId: number, body: AcceptFriendBody): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     removeFriend(userId: number, friendId: number): Promise<{
         message: string;

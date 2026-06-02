@@ -24,24 +24,24 @@ export declare class AuthService {
     }): Promise<{
         id: number;
         email: string;
-        type: import("../../generated/prisma/enums").VerificationCodeType;
         createdAt: Date;
         code: string;
+        type: import("../../generated/prisma/enums").VerificationCodeType;
         expiresAt: Date;
     }>;
     register(body: RegisterBodyType): Promise<{
         id: number;
-        banner: string | null;
-        status: import("../../generated/prisma/enums").UserStatus;
         email: string;
         name: string;
-        appRole: import("../../generated/prisma/enums").AppRole;
         phoneNumber: string;
         avatar: string | null;
+        banner: string | null;
+        birthday: Date | null;
+        appRole: import("../../generated/prisma/enums").AppRole;
+        status: import("../../generated/prisma/enums").UserStatus;
         lastSeenAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
-        birthday: Date | null;
     }>;
     sendOTP(body: SendOTPBodyType): Promise<{
         message: string;

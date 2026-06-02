@@ -19,9 +19,9 @@ export declare class FriendRepository {
     checkFriendshipStatus(requesterId: number, receiverId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     } | null>;
     createFriendRequest(requesterId: number, receiverId: number): Promise<{
         receiver: {
@@ -43,9 +43,9 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     acceptFriendRequest(requesterId: number, receiverId: number): Promise<{
         receiver: {
@@ -67,9 +67,9 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     getFriendList(userId: number): Promise<{
         id: number;
@@ -91,45 +91,45 @@ export declare class FriendRepository {
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     })[]>;
     rejectFriendRequest(requesterId: number, receiverId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     deleteFriendship(userId: number, friendId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     blockUser(blockerId: number, targetId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     unblockUser(blockerId: number, targetId: number): Promise<{
         id: number;
         status: import("../../generated/prisma/enums").FriendshipStatus;
         createdAt: Date;
         updatedAt: Date;
-        blockerIds: number[];
-        receiverId: number;
         requesterId: number;
+        receiverId: number;
+        blockerIds: number[];
     }>;
     getBlockList(userId: number): Promise<{
         id: number;
