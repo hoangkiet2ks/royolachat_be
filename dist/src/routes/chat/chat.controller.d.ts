@@ -11,39 +11,39 @@ export declare class ChatController {
             options: ({
                 votes: {
                     id: number;
-                    createdAt: Date;
                     userId: number;
+                    createdAt: Date;
                     pollId: number;
                     optionId: number;
                 }[];
             } & {
                 id: number;
-                createdAt: Date;
-                pollId: number;
                 text: string;
+                createdAt: Date;
                 order: number;
+                pollId: number;
             })[];
         } & {
+            title: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
             messageId: number;
-            title: string;
         }) | null;
         replyTo: {
             id: number;
-            type: import("../../generated/prisma/enums").MessageType;
             content: string | null;
+            type: import("../../generated/prisma/enums").MessageType;
             sender: {
                 name: string;
             };
         } | null;
         reactions: {
             id: number;
-            createdAt: Date;
-            userId: number;
-            messageId: number;
             emoji: string;
+            userId: number;
+            createdAt: Date;
+            messageId: number;
         }[];
         sender: {
             id: number;
@@ -52,17 +52,17 @@ export declare class ChatController {
         };
     } & {
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     })[]>;
     getOrCreateConversation(user: any, friendId: number): Promise<{
         id: number;
@@ -119,12 +119,12 @@ export declare class ChatController {
             };
         } & {
             id: number;
+            role: import("../../generated/prisma/enums").MemberRole;
             userId: number;
             conversationId: number;
-            role: import("../../generated/prisma/enums").MemberRole;
             joinedAt: Date;
-            lastReadMessageId: number | null;
             clearedAt: Date | null;
+            lastReadMessageId: number | null;
         })[];
     } & {
         id: number;
@@ -153,8 +153,8 @@ export declare class ChatController {
     } & {
         id: number;
         status: string;
-        createdAt: Date;
         userId: number;
+        createdAt: Date;
         conversationId: number;
         inviterId: number;
     })[]>;
@@ -198,16 +198,16 @@ export declare class ChatController {
         };
     } & {
         id: number;
+        content: string | null;
+        type: import("../../generated/prisma/enums").MessageType;
         createdAt: Date;
         updatedAt: Date;
-        type: import("../../generated/prisma/enums").MessageType;
-        conversationId: number;
-        content: string | null;
         fileUrl: string | null;
         isRecalled: boolean;
-        replyToId: number | null;
-        senderId: number;
         deletedByIds: number[];
         isPinned: boolean;
+        replyToId: number | null;
+        conversationId: number;
+        senderId: number;
     })[]>;
 }

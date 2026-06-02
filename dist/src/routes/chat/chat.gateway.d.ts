@@ -36,39 +36,39 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
                 options: ({
                     votes: {
                         id: number;
-                        createdAt: Date;
                         userId: number;
+                        createdAt: Date;
                         pollId: number;
                         optionId: number;
                     }[];
                 } & {
                     id: number;
-                    createdAt: Date;
-                    pollId: number;
                     text: string;
+                    createdAt: Date;
                     order: number;
+                    pollId: number;
                 })[];
             } & {
+                title: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
                 messageId: number;
-                title: string;
             }) | null;
             replyTo: {
                 id: number;
-                type: import("../../generated/prisma/enums").MessageType;
                 content: string | null;
+                type: import("../../generated/prisma/enums").MessageType;
                 sender: {
                     name: string;
                 };
             } | null;
             reactions: {
                 id: number;
-                createdAt: Date;
-                userId: number;
-                messageId: number;
                 emoji: string;
+                userId: number;
+                createdAt: Date;
+                messageId: number;
             }[];
             sender: {
                 id: number;
@@ -77,17 +77,17 @@ export declare class ChatGateway implements OnGatewayConnection, OnGatewayDiscon
             };
         } & {
             id: number;
+            content: string | null;
+            type: import("../../generated/prisma/enums").MessageType;
             createdAt: Date;
             updatedAt: Date;
-            type: import("../../generated/prisma/enums").MessageType;
-            conversationId: number;
-            content: string | null;
             fileUrl: string | null;
             isRecalled: boolean;
-            replyToId: number | null;
-            senderId: number;
             deletedByIds: number[];
             isPinned: boolean;
+            replyToId: number | null;
+            conversationId: number;
+            senderId: number;
         };
         message?: undefined;
     }>;
